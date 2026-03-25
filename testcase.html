@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PoC - Edge Minibar UI Spoofing</title>
   <style>
-    /* Mengembalikan warna konten ke Putih (Light Mode) sesuai kode awal */
     body {
       margin: 0;
       padding: 20px;
@@ -14,62 +13,52 @@
       color: black;
     }
 
-    button { 
-      padding: 12px 18px; 
-      font-size: 16px; 
-      margin-right: 10px; 
-      cursor: pointer;
-    }
+    button { padding: 12px 18px; font-size: 16px; margin-bottom: 10px; cursor: pointer; }
+    textarea { width: 100%; font-size: 18px; padding: 10px; margin-top: 20px; box-sizing: border-box; border: 1px solid #ccc; }
 
-    textarea { 
-      width: 100%; 
-      font-size: 18px; 
-      padding: 10px; 
-      margin-top: 20px; 
-      box-sizing: border-box; 
-      border: 1px solid #ccc;
-    }
-
-    /* FAKE BAR CONTAINER */
-    .fake-bar {
+    /* 1. OUTER CONTAINER: Persegi panjang full kiri-kanan */
+    .fake-bar-wrapper {
       position: fixed;
       width: 100%;
       left: 0;
       z-index: 9999;
-      display: flex;
-      justify-content: center;
+      background-color: #1a1a1a; /* Warna background persegi panjang (gelap) */
+      padding: 10px 0; /* Memberi ruang atas bawah untuk pill di dalamnya */
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, bottom 0.2s ease;
       pointer-events: none;
-      padding-bottom: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .fake-bar.show { 
+    .fake-bar-wrapper.show { 
       opacity: 1; 
       visibility: visible; 
     }
 
-    /* EDGE PILL UI - Tetap Dark Mode agar mirip Screenshot */
-    .edge-container {
-      background-color: #2b2b2b; 
-      width: 94%;
-      height: 58px;
-      border-radius: 50px;
+    /* 2. INNER PILL: Bentuk lonjong di dalam persegi panjang */
+    .edge-pill {
+      background-color: #333333; /* Warna lonjong sedikit lebih terang dari background luar */
+      width: 92%;
+      height: 48px;
+      border-radius: 50px; /* Membuat bentuk lonjong/kapsul */
       display: flex;
       align-items: center;
-      padding: 0 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      padding: 0 15px;
       box-sizing: border-box;
       position: relative;
     }
 
+    /* Logo Edge di Kiri */
     .edge-logo {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       flex-shrink: 0;
     }
 
+    /* URL & Lock Icon di Tengah */
     .url-content {
       display: flex;
       align-items: center;
@@ -81,20 +70,22 @@
     .lock-icon {
       width: 14px;
       height: 14px;
-      fill: #bbb;
+      fill: #ccc;
     }
 
     .url-text {
       color: #ffffff;
-      font-size: 16px;
-      letter-spacing: 0.2px;
+      font-size: 15px;
+      letter-spacing: 0.1px;
     }
 
+    /* Refresh Icon di Kanan */
     .refresh-icon {
-      width: 22px;
-      height: 22px;
-      fill: white;
+      width: 20px;
+      height: 20px;
+      fill: #fff;
       flex-shrink: 0;
+      opacity: 0.8;
     }
 
     /* Spacers for scrolling */
@@ -109,10 +100,10 @@
   <p>Scroll down to hide the address bar, then tap the textarea.</p>
 
   <button id="showBtn">Show Keyboard</button>
-  <textarea id="ta" placeholder="Textarea at top..."></textarea>
+  <textarea id="ta" placeholder="Top input..."></textarea>
 
-  <div class="fake-bar" id="fakeBar">
-    <div class="edge-container">
+  <div class="fake-bar-wrapper" id="fakeBar">
+    <div class="edge-pill">
       <img src="https://upload.wikimedia.org/wikipedia/en/a/aa/Microsoft_Copilot_Icon.svg" class="edge-logo">
       
       <div class="url-content">
@@ -129,12 +120,10 @@
   </div>
 
   <div class="spacer"></div>
-  <textarea id="middleTa" placeholder="Textarea in the middle..."></textarea>
+  <textarea id="middleTa" placeholder="Middle input..."></textarea>
   <div class="spacer-bottom"></div>
   
-  <div class="bottom-text">
-    🎉 You finally scrolled down and found this text! 🎉
-  </div>
+  <div class="bottom-text">End of Page</div>
 
   <script>
     const fakeBar = document.getElementById('fakeBar');
@@ -159,11 +148,7 @@
     }
 
     if ('visualViewport' in window) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (document.activeElement === ta || document.activeElement === middleTa) {
-          adjustFakeBar();
-        }
-      });
+      window.visualViewport.addEventListener('resize', adjustFakeBar);
     }
 
     document.getElementById("showBtn").onclick = () => {
