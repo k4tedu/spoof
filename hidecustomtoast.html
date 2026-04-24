@@ -1,0 +1,61 @@
+<html ontouchstart="run()">
+
+<head>
+    <style>
+        select {
+            font-size: 100px;
+        }
+    </style>
+    <script>
+        window.iteration = 0;
+
+        function run() {
+
+            if (iteration < 4) {
+                iteration++;
+
+                insertElement()
+                window.requestIdleCallback(run)
+                fsElement.requestFullscreen();
+
+                var XHR = new XMLHttpRequest();
+                XHR.open('GET', '/delay?5', false);
+                XHR.send();
+
+            }
+
+        }
+
+        function insertElement(event) {
+
+            var XHR = new XMLHttpRequest();
+            XHR.open('GET', '/delay?25', false);
+            XHR.send();
+
+            document.documentElement.appendChild(fsElement);
+
+        }
+    </script>
+
+</head>
+
+<body>
+    <select>
+        <option>Tap Here</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+        <option>Test</option>
+    </select>
+    <footer id="fsElement"></footer>
+
+</body>
+
+</html>
