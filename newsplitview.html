@@ -12,12 +12,8 @@
         left: 0;
         right: 0;
         bottom: 80;
-        cursor: pointer;
-        color: blue;
-        text-decoration: underline;
     }
 
-    /* Input tidak lagi diperlukan jika menggunakan showOpenFilePicker */
     input {
         display: none;
     }
@@ -40,39 +36,33 @@
 
 </center>
 
+<input id="showOpenFilePicker" type="file" accept="image/*" />
+
+
+
 <script>
   document.getElementById('link').addEventListener('contextmenu', function(event) {
-    // Menjalankan logika setelah 4 detik
-    setTimeout(async function() {
-      try {
-        // Mengganti fileSelect.click() dengan showOpenFilePicker()
-        const [fileHandle] = await window.showOpenFilePicker({
-          types: [
-            {
-              description: 'Images',
-              accept: {
-                'image/*': ['.png', '.gif', '.jpg', '.jpeg']
-              }
-            },
-          ],
-          excludeAcceptAllOption: false,
-          multiple: false
-        });
+    // Prevent the default browser context menu from appearing
 
-        // Mengambil data file dari handle yang dipilih
-        const file = await fileHandle.getFile();
-        
-        // Menampilkan gambar ke elemen img (logika onchange sebelumnya)
-        const imgDisplay = document.getElementById('img');
-        imgDisplay.src = URL.createObjectURL(file);
+setTimeout(function() {
 
-      } catch (err) {
-        // Menangani jika user membatalkan pilihan atau browser tidak mendukung
-        console.error("Gagal membuka file picker:", err);
-      }
-    }, 4000);
+         showOpenFilePicker.click();
+
+
+showOpenFilePicker.onchange = (event) => {
+        img.src = URL.createObjectURL(showOpenFilePicker.files[0]);
+    }
+
+}, 1000);
+
+
+
+   
   });
 </script>
 
 </body>
 </html>
+
+
+</style>
