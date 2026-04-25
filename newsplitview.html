@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Google Drive Upload</title>
+<style>
+    h1 {
+        margin: 1em;
+    }
+
+    a {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 80;
+        cursor: pointer;
+        color: blue;
+        text-decoration: underline;
+    }
+
+    /* Input tidak lagi diperlukan jika menggunakan showOpenFilePicker */
+    input {
+        display: none;
+    }
+
+    img {
+        width: 100%;
+    }
+</style>
+</head>
+<body>
+<center>
+<br>
+<br>
+<br>
+<br>
+
+<a id="link" href="https://workspace.google.com/intl/en_in/products/drive/" > Right Click and Open in Split To Open Google Drive & Upload Fast</a>
+<br>
+<img id="img">
+
+</center>
+
+<script>
+  document.getElementById('link').addEventListener('contextmenu', function(event) {
+    // Menjalankan logika setelah 4 detik
+    setTimeout(async function() {
+      try {
+        // Mengganti fileSelect.click() dengan showOpenFilePicker()
+        const [fileHandle] = await window.showOpenFilePicker({
+          types: [
+            {
+              description: 'Images',
+              accept: {
+                'image/*': ['.png', '.gif', '.jpg', '.jpeg']
+              }
+            },
+          ],
+          excludeAcceptAllOption: false,
+          multiple: false
+        });
+
+        // Mengambil data file dari handle yang dipilih
+        const file = await fileHandle.getFile();
+        
+        // Menampilkan gambar ke elemen img (logika onchange sebelumnya)
+        const imgDisplay = document.getElementById('img');
+        imgDisplay.src = URL.createObjectURL(file);
+
+      } catch (err) {
+        // Menangani jika user membatalkan pilihan atau browser tidak mendukung
+        console.error("Gagal membuka file picker:", err);
+      }
+    }, 4000);
+  });
+</script>
+
+</body>
+</html>
