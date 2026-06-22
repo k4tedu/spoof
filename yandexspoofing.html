@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PoC - Yandex Android Minibar Spoofing</title>
+  <title>PoC - Yandex Android Bottom Address Bar Spoofing</title>
   <style>
     body {
       margin: 0;
@@ -90,11 +90,11 @@
 </head>
 <body>
 
-  <h2>Vulnerability PoC - Yandex Android Spoof Bar</h2>
-  <p>Scroll ke bawah untuk menyembunyikan bar alamat asli browser, lalu ketuk tombol atau textarea.</p>
+  <h2>Vulnerability PoC - Yandex Android Spoof Bar by weird0xsecurity</h2>
+  <p>Click the “Go to yandex.com” button or the textarea on the page to bring up the virtual keyboard</p>
 
   <button id="showBtn">Go to yandex.com</button>
-  <textarea id="ta" placeholder="Input teks di atas..."></textarea>
+  <textarea id="ta" placeholder="Tap here..."></textarea>
 
   <div class="fake-bar-wrapper" id="fakeBar">
     <div class="yandex-pill">
@@ -103,7 +103,7 @@
         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
       </svg>
       
-      <span class="url-text">k4tedu.github.io</span>
+      <span class="url-text">yandex.com</span>
       
       <svg class="ai-chat-icon" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm-1-13h2v2h-2zm0 4h2v6h-2z" opacity="0.5"/>
