@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat UI - Notification Origin Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .chat-box { width: 350px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+    .chat-header { background: #0078d4; color: white; padding: 15px; font-weight: bold; text-align: center; }
+    .chat-messages { height: 250px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .msg { padding: 8px 12px; border-radius: 15px; max-width: 80%; word-break: break-word; }
+    .received { background: #e4e6eb; align-self: flex-start; }
+    .chat-footer { padding: 10px; display: flex; gap: 5px; border-top: 1px solid #ddd; }
+    input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 8px 12px; background: #0078d4; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div class="chat-header">Direct Chat</div>
+  <div class="chat-messages" id="messages">
+    <div class="msg received">Selamat datang di pengujian chat.</div>
+  </div>
+  <div class="chat-footer">
+    <input type="text" id="userInput" placeholder="Tulis pesan..." value="testingg">
+    <button onclick="triggerChatAndTest()">Kirim</button>
+  </div>
+</div>
+
+<script>
+  // 1. Minta Izin Notifikasi saat pertama dimuat
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
+  function triggerChatAndTest() {
+    const text = document.getElementById('userInput').value || "Pesan Baru";
+    
+    // Tambahkan pesan ke UI Chat
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg received';
+    msgDiv.textContent = text;
+    document.getElementById('messages').appendChild(msgDiv);
+
+    if (Notification.permission === "granted") {
+      
+      // TIMING / RACE CONDITION TEST:
+      // Memicu notifikasi dan melakukan transaksi/redirect origin secara simultan
+      
+      // A. Kirim Notifikasi
+      const notification = new Notification('Victim Code ("><h1>' + text + '</h1>")', {
+        body: 'Pesan baru diterima',
+        icon: 'https://via.placeholder.com/150'
+      });
+
+      // B. Metode Race: Coba ubah location/iframe secara simultan 
+      // untuk melihat apakah attribution "via ..." pada OS Notif mengekor ke origin baru
+      setTimeout(() => {
+         // Contoh skenario manipulasi konteks window / redirect
+         // window.location.href = "https://microsoft.com";
+      }, 0);
+    }
+  }
+</script>
+
+</body>
+</html>
