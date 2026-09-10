@@ -1,0 +1,11 @@
+<html>
+<button id="btn">Enter fullscreen</button>
+<script>
+document.getElementById("btn").onclick = function() {
+  document.body.webkitRequestFullScreen(function(){});
+  setTimeout(function() {
+    alert(0);
+  }, 100);
+}
+</script>
+</html>
