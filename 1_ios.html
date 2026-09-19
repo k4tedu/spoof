@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, user-scalable=yes"
+  />
+
+  <title>Browser Test</title>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+
+      background: #007aff;
+      color: #fff;
+
+      border: none;
+      border-radius: 10px;
+
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<button id="startBtn">
+  CLICK HERE
+</button>
+
+
+<script>
+
+const COUNTER_KEY = "browser_test_attempt";
+
+const startBtn =
+  document.getElementById("startBtn");
+
+
+/*
+ * Get current attempt
+ */
+
+function getAttempt() {
+
+  return parseInt(
+    localStorage.getItem(COUNTER_KEY) || "0",
+    10
+  );
+
+}
+
+
+/*
+ * Save attempt
+ */
+
+function saveAttempt(attempt) {
+
+  localStorage.setItem(
+    COUNTER_KEY,
+    attempt
+  );
+
+}
+
+
+/*
+ * Reset test
+ *
+ * Run this from DevTools Console:
+ *
+ * resetTest()
+ */
+
+function resetTest() {
+
+  localStorage.removeItem(
+    COUNTER_KEY
+  );
+
+  location.reload();
+
+}
+
+
+/*
+ * Create temporary page
+ */
+
+function createPage(tab, attempt) {
+
+  tab.document.write(`
+
+<!doctype html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>Browser Test</title>
+
+<style>
+
+html,
+body {
+
+  margin: 0;
+  padding: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: #fff;
+
+  font-family: Arial, sans-serif;
+
+}
+
+body {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+}
+
+.container {
+
+  width: 90%;
+  max-width: 900px;
+
+}
+
+.attempt {
+
+  font-size: 30px;
+
+  font-weight: bold;
+
+  margin-bottom: 30px;
+
+}
+
+.status {
+
+  font-size: 72px;
+
+  font-weight: bold;
+
+  margin: 30px 0;
+
+}
+
+.message {
+
+  font-size: 28px;
+
+  color: #555;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <div class="attempt">
+
+    ATTEMPT ${attempt} / 4
+
+  </div>
+
+
+  <div
+    id="status"
+    class="status"
+  >
+
+    PROCESSING...
+
+  </div>
+
+
+  <div
+    id="message"
+    class="message"
+  >
+
+    Browser test is running...
+
+  </div>
+
+</div>
+
+
+<script>
+
+const status =
+  document.getElementById("status");
+
+const message =
+  document.getElementById("message");
+
+
+/*
+ * ============================
+ * ATTEMPT 1
+ * ============================
+ */
+
+if (${attempt} === 1) {
+
+  status.textContent =
+    "STEP 1";
+
+  message.textContent =
+    "Starting navigation test...";
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 2";
+
+    message.textContent =
+      "Temporary state created...";
+
+  }, 700);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "FAILED";
+
+    message.textContent =
+      "Attempt 1 failed.";
+
+  }, 1500);
+
+
+  setTimeout(() => {
+
+    location.href =
+      "https://k4tedu.github.io/test/1.html";
+
+  }, 2500);
+
+}
+
+
+/*
+ * ============================
+ * ATTEMPT 2
+ * ============================
+ */
+
+else if (${attempt} === 2) {
+
+  status.textContent =
+    "STEP 1";
+
+  message.textContent =
+    "Starting second attempt...";
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 2";
+
+    message.textContent =
+      "Changing navigation state...";
+
+  }, 700);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 3";
+
+    message.textContent =
+      "Trying again...";
+
+  }, 1400);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "FAILED";
+
+    message.textContent =
+      "Attempt 2 failed.";
+
+  }, 2100);
+
+
+  setTimeout(() => {
+
+    location.href =
+      "https://k4tedu.github.io/test/1.html";
+
+  }, 3000);
+
+}
+
+
+/*
+ * ============================
+ * ATTEMPT 3
+ * ============================
+ */
+
+else if (${attempt} === 3) {
+
+  status.textContent =
+    "STEP 1";
+
+  message.textContent =
+    "Starting third attempt...";
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 2";
+
+    message.textContent =
+      "Testing navigation timing...";
+
+  }, 600);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 3";
+
+    message.textContent =
+      "Almost completed...";
+
+  }, 1200);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "STEP 4";
+
+    message.textContent =
+      "Final test before success...";
+
+  }, 1800);
+
+
+  setTimeout(() => {
+
+    status.textContent =
+      "FAILED";
+
+    message.textContent =
+      "Attempt 3 failed.";
+
+  }, 2400);
+
+
+  setTimeout(() => {
+
+    location.href =
+      "https://k4tedu.github.io/test/1.html";
+
+  }, 3300);
+
+}
+
+
+/*
+ * ============================
+ * ATTEMPT 4
+ * ============================
+ */
+
+else if (${attempt} >= 4) {
+
+  status.textContent =
+    "SUCCESS";
+
+  message.textContent =
+    "Fourth attempt completed successfully.";
+
+
+  /*
+   * Stay here.
+   *
+   * There is intentionally
+   * NO redirect back to 1.html.
+   */
+
+}
+
+<\/script>
+
+</body>
+
+</html>
+
+  `);
+
+  tab.document.close();
+
+}
+
+
+/*
+ * ============================
+ * MAIN CLICK HANDLER
+ * ============================
+ */
+
+startBtn.onclick = function () {
+
+  this.remove();
+
+
+  /*
+   * Increase counter
+   */
+
+  let attempt =
+    getAttempt() + 1;
+
+
+  saveAttempt(attempt);
+
+
+  console.log(
+    "[Browser Test] Attempt:",
+    attempt
+  );
+
+
+  /*
+   * Open new tab
+   */
+
+  const newTab =
+    window.open(
+      "about:blank",
+      "_blank"
+    );
+
+
+  if (!newTab) {
+
+    alert(
+      "Popup was blocked."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Run attempt
+   */
+
+  createPage(
+    newTab,
+    attempt
+  );
+
+};
+
+
+/*
+ * Make resetTest()
+ * available in DevTools.
+ */
+
+window.resetTest =
+  resetTest;
+
+</script>
+
+</body>
+
+</html>
